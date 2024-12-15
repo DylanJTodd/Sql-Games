@@ -32,8 +32,6 @@ sql-quiz .sqlQuizTitle {
     font-weight: 700;
 }
 
-sql-quiz .sqlQuizDescription {}
-
 sql-quiz .sqlQuizInputArea {
     line-height: 130%;
     min-width: 100%;
