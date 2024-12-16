@@ -10,10 +10,10 @@
     <title>The SQL Games</title>
 
     <!-- CSS -->  
-        <link rel="stylesheet" href="../css/orangeline.css" />
-        <link rel="stylesheet" href="../css/codemirror.css">
-        <link rel="stylesheet" href="../css/main.css" />
-        <link rel="stylesheet" href="../css/neat.css" />
+        <link rel="stylesheet" href="css/orangeline.css" />
+        <link rel="stylesheet" href="css/codemirror.css">
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/neat.css" />
     <!-- /CSS -->
 
     <!-- FAVICONS -->
@@ -54,10 +54,10 @@
 
     <!-- Scripts -->
         <script src="https://unpkg.com/@webcomponents/custom-elements@1.2.0/custom-elements.min.js"></script>
-        <script src="/scripts/codemirror.js"></script>
-        <script src="/scripts/codemirrorsql.js"></script>
-        <script src="/scripts/autorefresh.js"></script>
-        <script src="/scripts/main.js"></script>
+        <script src="scripts/codemirror.js"></script>
+        <script src="scripts/codemirrorsql.js"></script>
+        <script src="scripts/autorefresh.js"></script>
+        <script src="scripts/main.js"></script>
         <script>
             window.onload = () => loadData('sql-murder-mystery.db'); <!-- Database -->
         </script>
@@ -170,7 +170,7 @@
                     <img id="experienced-schema" src="schema.png" width='1002' height='491'>
                 </p>
                 <p>
-                    And you can always go to the <a href="walkthrough.html">walkthrough</a>.
+                    And you can always go to the walkthrough
                 </p>
 
                 <sql-exercise data-question="Use your knowledge of the database schema and SQL commands to find out who committed the murder." data-comment="When you think you know the answer, go to the next section." data-default-text="
@@ -271,7 +271,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.knightlab.com/libs/orangeline/0.1.1/js/orangeline.js"></script>
+    <script src="scripts/orangeline.js"></script>
     <script type="text/javascript">
         document.querySelector('#show-schema').addEventListener('click', function() {
             document.querySelector('#experienced-schema').classList.add('show');
