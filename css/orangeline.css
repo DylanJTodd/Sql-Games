@@ -372,22 +372,6 @@ output {
         page-break-after: avoid;
     }
 }
-@font-face {
-    font-family: "Salvo Serif Cond";
-    src: url("../assets/fonts/SalvoSerifCond-Bold.eot");
-    src: url("../assets/fonts/SalvoSerifCond-Bold.eot?#iefix") format("embedded-opentype"), url("../assets/fonts/SalvoSerifCond-Bold.woff2") format("woff2"), url("../assets/fonts/SalvoSerifCond-Bold.woff") format("woff"),
-        url("../assets/fonts/SalvoSerifCond-Bold.ttf") format("truetype"), url("../assets/fonts/SalvoSerifCond-Bold.svg#SalvoSerifCond-Bold") format("svg");
-    font-weight: bold;
-    font-style: normal;
-}
-@font-face {
-    font-family: "Salvo Serif Cond";
-    src: url("../assets/fonts/SalvoSerifCond-Light.eot");
-    src: url("../assets/fonts/SalvoSerifCond-Light.eot?#iefix") format("embedded-opentype"), url("../assets/fonts/SalvoSerifCond-Light.woff2") format("woff2"), url("../assets/fonts/SalvoSerifCond-Light.woff") format("woff"),
-        url("../assets/fonts/SalvoSerifCond-Light.ttf") format("truetype"), url("../assets/fonts/SalvoSerifCond-Light.svg#SalvoSerifCond-Light") format("svg");
-    font-weight: 300;
-    font-style: normal;
-}
 *,
 *::before,
 *::after {
@@ -1958,14 +1942,6 @@ a.link--no-style {
     text-shadow: none !important;
     background-image: none !important;
     text-decoration: none !important;
-}
-@font-face {
-    font-family: "icons";
-    src: url("../assets/fonts/icons.eot?j0h1sd");
-    src: url("../assets/fonts/icons.eot?j0h1sd#iefix") format("embedded-opentype"), url("../assets/fonts/icons.ttf?j0h1sd") format("truetype"), url("../assets/fonts/icons.woff?j0h1sd") format("woff"),
-        url("../assets/fonts/icons.svg?j0h1sd#icons") format("svg");
-    font-weight: normal;
-    font-style: normal;
 }
 [class*=" icon-"],
 [class^="icon-"] {
