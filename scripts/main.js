@@ -1,51 +1,116 @@
-// Set up DB
-function loadData(dbFile) {
-  if (!dbFile) { return; }
-  window.worker = new Worker("scripts/worker.sql.js");
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', dbFile, true);
-  xhr.responseType = 'arraybuffer';
-  xhr.onload = () => {
-    var uInt8Array = new Uint8Array(xhr.response);
-    worker.onmessage = event => {
-       if (event.data.ready) {
-         query('SELECT 1', (e) => {
-           console.log('DB initialization successful');
-           document.querySelectorAll("input.sql-exercise-submit").forEach(
-             (button) => {button.disabled = false;});
-         });
-       } else {
-         console.log('DB initialization failed');
-       }
+import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15/dist/index.js';
+
+let pglite; // Global instance
+let isInitialized = false;
+
+export async function loadData(sqlFile) {
+  if (!sqlFile) { return; }
+
+  try {
+    if (!isInitialized) {
+      pglite = new PGlite();
+      isInitialized = true;
     }
 
-    worker.postMessage({
-      id:1,
-      action:'open',
-      buffer: uInt8Array,
-    });
+    const response = await fetch(sqlFile);
+    if (!response.ok) {
+      throw new Error(`Failed to load SQL file: ${response.statusText}`);
+    }
+    
+    const sqlCommands = await response.text();
+
+    const commands = sqlCommands
+      .split(';')
+      .map(cmd => cmd.trim())
+      .filter(cmd => cmd.length > 0);
+
+    for (const command of commands) {
+      if (command) {  // Only execute non-empty commands
+        try {
+          await pglite.query(command);
+        } catch (cmdError) {
+          console.error('Error executing command:', command, cmdError);
+        }
+      }
+    }
+
+    try {
+      const testResult = await pglite.query('SELECT 1');
+      if (testResult) {
+        console.log('DB initialization successful');
+        document.querySelectorAll("input.sql-exercise-submit")
+          .forEach(button => { button.disabled = false; });
+      }
+    } catch (testError) {
+      console.error('Test query failed:', testError);
+    }
+
+  } catch (err) {
+    console.error('DB initialization failed:', err);
   }
-  xhr.send();
 }
 
-function query(sql, cb, err_cb) {
-  if (err_cb) {
-    worker.onerror = e => err_cb(e);
-  } else {
-    worker.onerror = e => { throw new Error(e.message); }
+// Make sure the DOM is loaded before initializing
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await loadData('./sql/Test.sql');
+  } catch (err) {
+    console.error('Error during initialization:', err);
+  }
+});
+
+async function query(sql, successCallback, errorCallback) {
+  if (!pglite || !isInitialized) {
+    const error = new Error('Database not initialized');
+    if (errorCallback) {
+      errorCallback(error);
+      return;
+    }
+    throw error;
   }
 
-  worker.onmessage = event => {
-    cb(event.data.results);
+  try {
+    const result = await pglite.query(sql);
+    
+    // Transform PGlite result to match the expected format
+    const transformedResult = [{
+      columns: result.fields ? result.fields.map(f => f.name) : [],
+      values: result.rows ? result.rows.map(row => Object.values(row)) : []
+    }];
+
+    if (successCallback) {
+      successCallback(transformedResult);
+    }
+    return transformedResult;
+  } catch (err) {
+    console.error('Query error:', err);
+    if (errorCallback) {
+      errorCallback(err);
+      return;
+    }
+    throw err;
   }
-  worker.postMessage({
-      id: 2,
-      action: 'exec',
-      sql: sql
-  });
 }
 
-function datatable (data) {
+// Transform PGLite results to match sql.js format
+function transformResult(pgliteResult) {
+  if (!pgliteResult || !pgliteResult.rows) {
+    return [{ columns: [], values: [] }];
+  }
+
+  const columns = Object.keys(pgliteResult.rows[0] || {});
+  const values = pgliteResult.rows.map(row => 
+    columns.map(col => row[col])
+  );
+
+  return [{
+    columns: columns,
+    values: values
+  }];
+}
+
+// Datatable function remains the same
+function datatable(data) {
   var tbl = document.createElement("table");
   tbl.className = 'datatable'
 
@@ -77,18 +142,15 @@ function datatable (data) {
   return tbl;
 }
 
-
-//////////////////////////
-// SQL Quiz Component
-//////////////////////////
-
-function setdiff(a, b) { // https://stackoverflow.com/a/36504668
+// Set difference utility function remains the same
+function setdiff(a, b) {
   var seta = new Set(a);
   var setb = new Set(b);
   var res = new Set([...seta].filter(x => !setb.has(x)));
-  return res
+  return res;
 }
 
+// SQL Quiz Component
 class sqlQuizOption extends HTMLElement {
   constructor() {
     super();
@@ -118,7 +180,6 @@ class sqlQuizOption extends HTMLElement {
 }
 
 customElements.define('sql-quiz-option', sqlQuizOption);
-
 
 class sqlQuiz extends HTMLElement {
   constructor() {
@@ -179,12 +240,11 @@ class sqlQuiz extends HTMLElement {
     outputBox.name = 'output';
     outputArea.appendChild(outputBox);
 
-    // Link everything together
     form.appendChild(outputArea);
     form['onsubmit'] = (e) => {
       e && e.preventDefault();
       var value = Array.prototype.filter.call(form.input, i => i.checked).map(i => i.value);
-      var correct = Array.prototype.filter.call(form.input, i => i.dataset.correct === "true").map(i => i.value);
+      var correct = Array.prototype.filter.call(form.input, i.dataset.correct === "true").map(i => i.value);
       var mistakes = setdiff(correct, value).size + setdiff(value, correct).size;
       var res = mistakes >= 2 ? mistakes + " mistakes" :
           mistakes == 1 ? mistakes + " mistake" : "All correct!"
@@ -193,14 +253,12 @@ class sqlQuiz extends HTMLElement {
 
     homeDiv.append(form);
     this.append(homeDiv);
-    }
+  }
 }
+
 customElements.define('sql-quiz', sqlQuiz);
 
-//////////////////////////
 // SQL Exercise Component
-//////////////////////////
-
 class sqlExercise extends HTMLElement {
   constructor() {
     super();
@@ -254,18 +312,19 @@ class sqlExercise extends HTMLElement {
     var runButton = `<input class="sql-exercise-submit" type="submit" value="Run &#x21e9;" disabled>`;
     inputArea.insertAdjacentHTML("beforeend", runButton);
 
-    form['onsubmit'] = (e) => {
+    form['onsubmit'] = async (e) => {
       e && e.preventDefault();
       var result_div = document.createElement('div');
 
-      var handleSubmit = (submission_data) => {
+      var handleSubmit = async (submission_data) => {
         result_div.className = 'returnOkay';
 
         if (solution) {
           var verdict_div = document.createElement('div');
           result_div.appendChild(verdict_div);
 
-          query(solution, (solution_data) => {
+          try {
+            const solution_data = await query(solution);
             var submission_u = submission_data[0].values;
             var solution_u = solution_data[0].values;
             if (!orderSensitive) {
@@ -273,10 +332,13 @@ class sqlExercise extends HTMLElement {
                 solution_u.sort();
             }
             var verdict = arraysEqual(submission_u, solution_u) ? "Correct" : "Incorrect";
-            // http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html
             verdict_div.innerText = verdict;
-          });
+          } catch (err) {
+            console.error('Error checking solution:', err);
+            verdict_div.innerText = 'Error checking solution';
+          }
         }
+        
         if (submission_data.length > 0) {
           result_div.appendChild(datatable(submission_data));
         } else {
@@ -289,28 +351,15 @@ class sqlExercise extends HTMLElement {
         result_div.innerText = e.message;
       }
 
-      query(editor.getValue(), handleSubmit, handleError);
+      try {
+        const results = await query(editor.getValue());
+        await handleSubmit(results);
+      } catch (err) {
+        handleError(err);
+      }
+      
       outputBox.innerHTML = '';
       outputBox.appendChild(result_div);
-    };
-
-    form['onkeydown'] = (e) => {
-      if (e.keyCode == 13 && e.shiftKey) {
-        e.preventDefault();
-        form.onsubmit();
-      };
-    };
-
-    if (solution) {
-      var solutionButton = document.createElement('input');
-      solutionButton.name = 'solution';
-      solutionButton.type = 'button';
-      solutionButton.value = 'Show Solution';
-      solutionButton.onclick = (e) => {
-        var existingCode = editor.getValue();
-        editor.setValue(existingCode + "\n/* " + solution);
-      };
-      inputArea.appendChild(solutionButton);
     };
 
     var resetButton = document.createElement('input');
@@ -339,30 +388,17 @@ class sqlExercise extends HTMLElement {
 
 customElements.define('sql-exercise', sqlExercise);
 
-
-//////////////////////////
-// Utility functions
-//////////////////////////
-
 function arraysEqual(a,b) {
-  /*
-  https://stackoverflow.com/questions/3115982/how-to-check-if-two-arrays-are-equal-with-javascript
-  Array-aware equality checker:
-  Returns whether arguments a and b are == to each other;
-  however if they are equal-lengthed arrays, returns whether their
-  elements are pairwise == to each other recursively under this
-  definition.
-  */
   if (a instanceof Array && b instanceof Array) {
-    if (a.length != b.length) { // assert same length
+    if (a.length != b.length) {
       return false;
     }
-    for (var i=0; i<a.length; i++) { // assert each element equal
+    for (var i=0; i<a.length; i++) {
       if (!arraysEqual(a[i],b[i]))
         return false;
     }
     return true;
   } else {
-    return a == b;  // if not both arrays, should be the same
+    return a == b;
   }
 }
