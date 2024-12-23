@@ -57,7 +57,7 @@
         <script src="scripts/codemirror.js"></script>
         <script src="scripts/codemirrorsql.js"></script>
         <script src="scripts/autorefresh.js"></script>
-        <script type="module" src="scripts/main.js"></script>
+        <script type="module" src="scripts/main.js?caller=index"></script>
     <!-- /Scripts -->
 
     <!-- Google tag (gtag.js) -->
@@ -156,7 +156,9 @@
                     Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
                 </p>
                 <!-- Fix issue tomorrow -->
-                <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT name FROM sqlite_master where type = 'table'"></sql-exercise>
+                <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT table_name 
+  FROM information_schema.tables 
+ WHERE table_schema = 'public';"></sql-exercise>
 
             </div>
         </div>
@@ -164,30 +166,41 @@
         <div class="grid">
             <div class="grid-item">
                 <p>
-                    Besides knowing the table names, you need to know how each table is structured. The way this works is also dependent upon which database technology you use. Here's how you do it with SQLite.
+                    Not only is knowing which tables exist in the database, but also knowing the structure of the tables is important. This command is also database language you use. Again this is PostgreSQL:
                 </p>
 
-                <sql-exercise data-question="Run this query to find the structure of the `crime_scene_report` table" data-comment="Change the value of 'name' to see the structure of the other tables you learned about with the previous query." data-default-text="SELECT sql 
-  FROM sqlite_master
- where name = 'crime_scene_report'"></sql-exercise>
+                <sql-exercise data-question="Run the below query to find the structure of the `user` table" data-comment="Tip: You can change the value of `user` to match any of the other names you saw in the previous query." data-default-text="SELECT table_schema, table_name, column_name, data_type, is_nullable
+  FROM information_schema.columns
+ WHERE table_name = 'users';"></sql-exercise>
 
+                <p>
+                    Alternatively, each level will provide the option to <a id="show-schema" style="cursor: pointer;">click</a> and show the schema diagram.
+                    <img id="experienced-schema" src="images/schemas/MockDataBaseSchema.png" width='1002' height='491'>
+                </p>
             </div>
         </div>
+        
 
 
         <div class="grid">
             <div class="grid-item">
-                <h3>The rest is up to you!</h3>
+                <b><h3>Learning SQL</h3></b>
                 <p>
-                    If you're really comfortable with SQL, you can probably get it from here.
+                    To succeed in SQL Games, you will need to know SQL. We will not be teaching it here on this page, but you can check out 
+                    <a href="https://datalemur.com/sql-tutorial" style="text-decoration: none;">DataLemur</a> to learn everything you need to know about winning the SQL Games
                 </p>
-                <p>
-                    But <a id="show-schema">click here</a> to show the schema diagram.
-                </p>
-                <p>
-                    And you can always go to the walkthrough
-                </p>
+            </div>
+        </div>
 
+        <div style="text-align: center;margin: 0; padding: 0;">
+            <a href="https://datalemur.com/sql-tutorial" style="text-decoration: none;">
+            <button style="padding: 0; width: 40vw; min-width: 350px; height: 10vh; min-height: 60px; max-height: 100px; border-radius: 12px; background-color: #ED1C24; color: white; border: none; cursor: pointer; margin-top: 16px; margin-bottom: 64px;">
+                <b><p style="margin: 0; padding: 0; font-size:xx-large; font-weight: 900">Visit DataLemur</p></b>
+            </button>
+            </a>
+        </div>
+
+<!--
                 <sql-exercise data-question="Use your knowledge of the database schema and SQL commands to find out who committed the murder." data-comment="When you think you know the answer, go to the next section." data-default-text="
               
               
@@ -195,10 +208,7 @@
 
 
               "></sql-exercise>
-                <!-- newlines in data-default-text force input to be larger -->
-            </div>
-        </div>
-
+                 newlines in data-default-text force input to be larger
         <div id="check-solution" class="grid">
             <div class="grid-item">
                 <h3>Check your solution</h3>
@@ -223,67 +233,9 @@
             </div>
         </div>
     </div>
-
-    <footer class="footer-knightlab--dark">
-        <div class="container">
-            <div class='grid grid-center'>
-                <div class='column-2 column-4-phone column-4-tablet'>
-                    <a href="http://knightlab.northwestern.edu" target="_blank">
-                        <img src="https://cdn.knightlab.com/libs/orangeline/0.1.1/assets/logo-knightlab-stacked-dark-small.png" style="margin-left:auto;">
-                    </a>
-                    <ul class="list--social text-align-center">
-                        <li><a class="link--no-style" href="http://www.twitter.com/knightlab" target="_blank" title="Knight Lab on Twitter"><span class="icon-twitter"></span></a></li>
-                        <li><a class="link--no-style" href="https://www.facebook.com/knightlab" target="_blank" title="Knight Lab on Facebook"><span class="icon-facebook"></span></a></li>
-                        <li><a class="link--no-style" href="https://github.com/NUKnightLab/" target="_blank" title="Knight Lab on GitHub"><span class="icon-github"></span></a></li>
-                    </ul>
-                </div>
-                <div class='column-4 column-5-tablet column-6-phone footer-description'>
-                    <p>
-                        The <a title="Northwestern University" href="http://www.northwestern.edu/" target="_blank">Northwestern
-              University</a> Knight Lab is a team of technologists and journalists working at advancing news media innovation through exploration and experimentation.
-                    </p>
-                    <div class="grid-size-2 grid-size-2-phone">
-                        <div class="grid-item">
-                            <a title="Medill School of Journalism, Media, Integrated Marketing Communications" href="http://www.medill.northwestern.edu/" target="_blank">
-                                <img src="https://cdn.knightlab.com/libs/orangeline/0.1.1/assets/logo-medill-dark.png">
-                            </a>
-                        </div>
-
-                        <div class="grid-item">
-                            <a title="McCormick School of Engineering" href="http://www.mccormick.northwestern.edu/" target="_blank">
-                                <img src="https://cdn.knightlab.com/libs/orangeline/0.1.1/assets/logo-mccormick-dark.png">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-center">
-                <div class="grid-item">
-                    <address itemscope="" itemtype="http://data-vocabulary.org/Organization">
-            <span style="display:none;" itemprop="name"
-              title="Knight Lab | Advancing news media innovation through exploration and experimentation."
-              class="address-name">Knight Lab</span>
-            <span itemprop="tel" class="tel">(847) 467-4971</span>
-            <span itemprop="address" itemscope="" itemtype="http://data-vocabulary.org/Address" class="address">
-              <span itemprop="street-address" class="street-address">1845 Sheridan Road</span>
-              <span class="room-num">Fisk #109 &amp; #111</span>
-              <div class="address-group">
-                <span itemprop="locality">Evanston,</span> <span itemprop="region">IL</span> <span
-                  itemprop="postal-code">60208 </span>
-                <span style="display:none;" itemprop="geo" itemscope="" itemtype="http://www.data-vocabulary.org/Geo/"
-                  class="geo">
-                  Latitude: <span itemprop="latitude">42.056893</span><br>Longitude:
-                  <span itemprop="longitude">-87.676735</span>
-                </span>
-                <a style="display:none;" href="http://knightlab.northwestern.edu" itemprop="url" class="url">Northwesten
-                  University Knight Lab | Advancing media innovation through exploration and experimentation.</a>
-              </div>
-            </span>
-          </address>
-                    <span class="copyright">© Copyright 2019 Northwestern University</span>
-                </div>
-            </div>
-        </div>
+-->
+    <footer class="footer-knightlab--dark" style="position: absolute; left: 0; right: 0; width: 100%; background-color: #333; color: white; text-align: center; padding: 10px 0; height: 50px;">
+        <!-- To Be Added Soon -->
     </footer>
 
     <script src="scripts/orangeline.js"></script>
