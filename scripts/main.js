@@ -65,7 +65,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function specificLoad()
 {
-  if (caller == "index"){loadData('sql/mock_database.sql')};
+  if (caller == "index"){loadData('sql/mock_database.sql')}
+  else
+  {
+    //Implement functionality to load different databases for level template
+  }
 }
 
 async function query(sql, successCallback, errorCallback) {
