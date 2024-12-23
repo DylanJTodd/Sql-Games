@@ -1,0 +1,249 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="canonical" href="https://dylanjtodd.github.io/Sql-Games/"> <!-- Update -->
+    <title>The SQL Games</title>
+
+    <!-- CSS -->  
+        <link rel="stylesheet" href="css/orangeline.css" />
+        <link rel="stylesheet" href="css/codemirror.css">
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/neat.css" />
+    <!-- /CSS -->
+
+    <!-- FAVICONS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="images/icons/datalemur-icon-180x180.png">
+        <link rel="icon" type="image/png" href="images/icons/datalemur-icon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="images/icons/datalemur-icon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="images/icons/json/manifest.json">
+        <link rel="mask-icon" href="images/icons/svgs/datalemurlogoblacked.svg" color="#ed1c24">
+        <meta name="theme-color" content="#ffffff">
+    <!-- /FAVICONS -->
+
+    <!-- Meta -->
+        <meta name="keywords" content="SQL, databases, game, fun, DataLemur, learn, practice, learning, SQL games">
+        <meta name="description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?">
+        <meta name="author" content="Dylan Todd">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv='cache-control' content='no-cache'> 
+        <meta http-equiv='expires' content='0'> 
+        <meta http-equiv='pragma' content='no-cache'>
+    <!-- /Meta -->
+
+    <!-- Open Graph -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="SQL Games!" />
+        <meta property="og:description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?" />
+        <!-- <meta property="og:image" content="Display Image" /> -->
+        <meta property="og:url" content="https://dylanjtodd.github.io/Sql-Games/" /> <!-- Update -->
+        <meta property="og:site_name" content="DataLemurs SQL Death Games!" />
+    <!-- /Open Graph -->
+
+    <!-- Twitter Card -->
+        <meta name="twitter:title" content="DataLemurs SQL Death Games!">
+        <meta name="twitter:description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?">
+        <!--  <meta name="twitter:image" content="Display Image"> -->
+        <meta name="twitter:site" content="@nicksinghtech">
+        <meta name="twitter:creator" content="@nicksinghtech">
+    <!-- /Twitter Card -->
+
+    <!-- Scripts -->
+        <script src="https://unpkg.com/@webcomponents/custom-elements@1.2.0/custom-elements.min.js"></script>
+        <script src="scripts/codemirror.js"></script>
+        <script src="scripts/codemirrorsql.js"></script>
+        <script src="scripts/autorefresh.js"></script>
+        <script type="module" src="scripts/main.js?caller=index"></script>
+    <!-- /Scripts -->
+
+    <!-- Google tag (gtag.js) -->
+        <!--
+        <<script async src="https://www.googletagmanager.com/gtag/js?id=G-8F4WPDMPL5"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-8F4WPDMPL5');
+        </script>> 
+        -->
+    <!-- Google tag (gtag.js) -->
+
+    <title>The SQL Games</title>
+</head>
+
+<body>
+    <!-- Header -->
+        <nav style="position: sticky; top: 0; background: white; z-index: 100; display: flex;">
+            <a id="main-nav-link" href="https://datalemur.com/" style="display: flex; justify-content: left; align-items: center; height: 52px; padding-left: 18px; width: 200px; background: none !important;">
+                <img src="images/icons/svgs/datalemurlogo.svg" alt="DataLemur Logo" style="margin-top: 15px;">
+            </a>
+            <!--
+                <div class="nav-mobile-menu">
+                    <button class="button-plain">
+                        <span class="icon-menu"></span>
+                    </button>
+                </div>
+            -->
+            <!-- Add link to levels menu-->
+            <ul style="margin-left: auto; display: flex; justify-content: flex-end; padding-right: 22px !important;"></ul>
+                <a style="background: none !important; margin-right: 20px; margin-top: 8px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <h5 style="margin: 0;"><strong>Levels</strong></h5>
+                </a>
+                <style>
+                    a:hover {
+                        color: #ED1C24;
+                    }
+                </style>
+            </ul>
+        </nav>
+    <!-- /Header -->
+
+    <!-- Title -->
+    <header class="header-product">
+        <h1 class="product-logo product-logo-large"> SQL Games </h1>
+        <h2 class="product-tagline" style="color: #ED1C24;">How far will you make it? </h2>
+    </header>
+    <!-- /Title -->
+
+
+    <div class="container">
+
+        <div id="intro" class="grid">
+            <div class="grid-item">
+                <img src="images/SqlGamesIntroImage.jpg" class="img-rounded" alt="Illustration of 3 hooded masked men with the letters S,Q,L written on the mask.">
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h2 id="experienced" style="color: #ED1C24;">Introduction</h2>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. 
+                    Vestibulum lacinia arcu eget nulla. 
+                </p>
+
+                <h3><b>Feeling Confident?</b></h3>
+
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                </p>
+
+                <div style="text-align: center;margin: 0; padding: 0;">
+                    <button style="padding: 0; width: 30vw; min-width: 300px; height: 5vh; min-height: 35px; max-height: 50px; border-radius: 12px; background-color: #ED1C24; color: white; border: none; cursor: pointer; margin-top: 16px; margin-bottom: 16px;">
+                        <b><p style="margin: 0; padding: 0; font-size:x-large ;">SQL Games Level 1</p></b>
+                    </button>
+                </div>
+
+                
+                <h3><b>How to play</b></h3>
+
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. 
+                    Vestibulum lacinia arcu eget nulla. 
+                </p>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                </p>
+                <!-- Fix issue tomorrow -->
+                <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT table_name 
+  FROM information_schema.tables 
+ WHERE table_schema = 'public';"></sql-exercise>
+
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <p>
+                    Not only is knowing which tables exist in the database, but also knowing the structure of the tables is important. This command is also database language you use. Again this is PostgreSQL:
+                </p>
+
+                <sql-exercise data-question="Run the below query to find the structure of the `user` table" data-comment="Tip: You can change the value of `user` to match any of the other names you saw in the previous query." data-default-text="SELECT table_schema, table_name, column_name, data_type, is_nullable
+  FROM information_schema.columns
+ WHERE table_name = 'users';"></sql-exercise>
+
+                <p>
+                    Alternatively, each level will provide the option to <a id="show-schema" style="cursor: pointer;">click</a> and show the schema diagram.
+                    <img id="experienced-schema" src="images/schemas/MockDataBaseSchema.png" width='1002' height='491'>
+                </p>
+            </div>
+        </div>
+        
+
+
+        <div class="grid">
+            <div class="grid-item">
+                <b><h3>Learning SQL</h3></b>
+                <p>
+                    To succeed in SQL Games, you will need to know SQL. We will not be teaching it here on this page, but you can check out 
+                    <a href="https://datalemur.com/sql-tutorial" style="text-decoration: none;">DataLemur</a> to learn everything you need to know about winning the SQL Games
+                </p>
+            </div>
+        </div>
+
+        <div style="text-align: center;margin: 0; padding: 0;">
+            <a href="https://datalemur.com/sql-tutorial" style="text-decoration: none;">
+            <button style="padding: 0; width: 40vw; min-width: 350px; height: 10vh; min-height: 60px; max-height: 100px; border-radius: 12px; background-color: #ED1C24; color: white; border: none; cursor: pointer; margin-top: 16px; margin-bottom: 64px;">
+                <b><p style="margin: 0; padding: 0; font-size:xx-large; font-weight: 900">Visit DataLemur</p></b>
+            </button>
+            </a>
+        </div>
+
+<!--
+                <sql-exercise data-question="Use your knowledge of the database schema and SQL commands to find out who committed the murder." data-comment="When you think you know the answer, go to the next section." data-default-text="
+              
+              
+
+
+
+              "></sql-exercise>
+                 newlines in data-default-text force input to be larger
+        <div id="check-solution" class="grid">
+            <div class="grid-item">
+                <h3>Check your solution</h3>
+                <sql-exercise data-question="Did you find the killer?" data-comment="" data-default-text="INSERT INTO solution VALUES (1, 'Insert the name of the person you found here');
+        
+        SELECT value FROM solution;"></sql-exercise>
+            </div>
+        </div>
+
+        <div id="credits" class="grid">
+            <div class="grid-item">
+                <h3>Credits</h3>
+                <p>The SQL Murder Mystery was created by <a href="https://twitter.com/joonparkmusic">Joon Park</a> and <a href="https://twitter.com/Cathy_MeiyingHe">Cathy He</a> while they were Knight Lab fellows. See the <a href="https://github.com/NUKnightLab/sql-mysteries">GitHub repository</a>                    for more information.</p>
+                <p>Adapted and produced for the web by <a href="https://twitter.com/joegermuska">Joe Germuska</a>.</p>
+                <p>This mystery was inspired by <a href="https://github.com/veltman/clmystery">a crime in the neighboring
+            Terminal City.</a></p>
+                <p>Web-based SQL is made possible by <a href="https://github.com/sql-js/sql.js/">SQL.js</a></p>
+                <p>SQL query custom web components created and released to the public domain by Zi Chong Kao, creator of <a href="https://selectstarsql.com/">Select Star SQL.</a></p>
+                <p>Detective illustration courtesy of <a href="https://www.vecteezy.com/">Vectors by Vecteezy</a></p>
+                <p>Original code for this project is released under the <a href="https://github.com/NUKnightLab/sql-mysteries/blob/master/LICENSE">MIT License</a></p>
+                <p>Original text and other content for this project is released under <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons CC BY-SA 4.0</a></p>
+            </div>
+        </div>
+    </div>
+-->
+    <footer class="footer-knightlab--dark" style="position: absolute; left: 0; right: 0; width: 100%; background-color: #333; color: white; text-align: center; padding: 10px 0; height: 50px;">
+        <!-- To Be Added Soon -->
+    </footer>
+
+    <script src="scripts/orangeline.js"></script>
+    <script type="text/javascript">
+        document.querySelector('#show-schema').addEventListener('click', function() {
+            document.querySelector('#experienced-schema').classList.add('show');
+        })
+    </script>
+</body>
+
+</html>
