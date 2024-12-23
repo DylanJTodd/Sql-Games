@@ -57,10 +57,7 @@
         <script src="scripts/codemirror.js"></script>
         <script src="scripts/codemirrorsql.js"></script>
         <script src="scripts/autorefresh.js"></script>
-        <script src="scripts/main.js"></script>
-        <script>
-            window.onload = () => loadData('sql-murder-mystery.db'); <!-- Database -->
-        </script>
+        <script type="module" src="scripts/main.js"></script>
     <!-- /Scripts -->
 
     <!-- Google tag (gtag.js) -->
@@ -94,9 +91,14 @@
             -->
             <!-- Add link to levels menu-->
             <ul style="margin-left: auto; display: flex; justify-content: flex-end; padding-right: 22px !important;"></ul>
-                <a style="background: none !important; margin-right: 20px; margin-top: 8px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <a style="background: none !important; margin-right: 20px; margin-top: 8px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                     <h5 style="margin: 0;"><strong>Levels</strong></h5>
                 </a>
+                <style>
+                    a:hover {
+                        color: #ED1C24;
+                    }
+                </style>
             </ul>
         </nav>
     <!-- /Header -->
@@ -104,29 +106,57 @@
     <!-- Title -->
     <header class="header-product">
         <h1 class="product-logo product-logo-large"> SQL Games </h1>
-        <h2 class="product-tagline">How far will you make it? </h2>
+        <h2 class="product-tagline" style="color: #ED1C24;">How far will you make it? </h2>
     </header>
     <!-- /Title -->
 
 
     <div class="container">
+
+        <div id="intro" class="grid">
+            <div class="grid-item">
+                <img src="images/SqlGamesIntroImage.jpg" class="img-rounded" alt="Illustration of 3 hooded masked men with the letters S,Q,L written on the mask.">
+            </div>
+        </div>
+
         <div class="grid">
             <div class="grid-item">
-                <h2 id="experienced">Experienced SQL sleuths start here</h2>
+                <h2 id="experienced" style="color: #ED1C24;">Introduction</h2>
                 <p>
-                    A crime has taken place and the detective needs your help. The detective gave you the crime scene report, but you somehow lost it. You vaguely remember that the crime was a <strong>​murder​</strong> that occurred sometime on ​<strong>Jan.15, 2018​</strong>                    and that it took place in ​<strong>SQL City​</strong>. Start by retrieving the corresponding crime scene report from the police department’s database.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. 
+                    Vestibulum lacinia arcu eget nulla. 
                 </p>
 
-                <h3>Exploring the Database Structure</h3>
+                <h3><b>Feeling Confident?</b></h3>
 
                 <p>
-                    Experienced SQL users can often use database queries to infer the structure of a database. But each database system has different ways of managing this information. The SQL Murder Mystery is built using SQLite. Use this SQL command to find the tables
-                    in the Murder Mystery database.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
                 </p>
 
-                <sql-exercise data-question="Run this query to find the names of the tables in this database." data-comment="This command is specific to SQLite. For other databases, you'll have to learn their specific syntax." data-default-text="SELECT name 
-  FROM sqlite_master
- where type = 'table'"></sql-exercise>
+                <div style="text-align: center;margin: 0; padding: 0;">
+                    <button style="padding: 0; width: 30vw; min-width: 300px; height: 5vh; min-height: 35px; max-height: 50px; border-radius: 12px; background-color: #ED1C24; color: white; border: none; cursor: pointer; margin-top: 16px; margin-bottom: 16px;">
+                        <b><p style="margin: 0; padding: 0; font-size:x-large ;">SQL Games Level 1</p></b>
+                    </button>
+                </div>
+
+                
+                <h3><b>How to play</b></h3>
+
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. 
+                    Vestibulum lacinia arcu eget nulla. 
+                </p>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                </p>
+                <!-- Fix issue tomorrow -->
+                <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT name FROM sqlite_master where type = 'table'"></sql-exercise>
 
             </div>
         </div>
