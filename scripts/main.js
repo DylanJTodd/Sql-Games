@@ -1,4 +1,8 @@
+const scriptUrl = new URL(import.meta.url);
+const caller = scriptUrl.searchParams.get('caller');
+
 import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15/dist/index.js';
+
 
 let pglite; // Global instance
 let isInitialized = false;
@@ -53,11 +57,16 @@ export async function loadData(sqlFile) {
 // Make sure the DOM is loaded before initializing
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    await loadData('./sql/Test.sql');
+    await specificLoad();
   } catch (err) {
     console.error('Error during initialization:', err);
   }
 });
+
+function specificLoad()
+{
+  if (caller == "index"){loadData('sql/mock_database.sql')};
+}
 
 async function query(sql, successCallback, errorCallback) {
   if (!pglite || !isInitialized) {
