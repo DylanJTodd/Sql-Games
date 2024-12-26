@@ -2,34 +2,35 @@ function toggleMenu() {
     const menu = document.getElementById('levelMenu');
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
+        const currentLevel = parseInt(localStorage.getItem('currentLevel'), 10) || 0;
         const levels = [
-            { num: 1, link: 'level1.html'},
-            { num: 2, link: 'level2.html'},
-            { num: 3, link: 'level3.html'},
-            { num: 4, link: 'level4.html'},
-            { num: 5, link: 'level5.html'},
-            { num: 6, link: 'level6.html'},
-            { num: 7, link: 'level7.html'},
-            { num: 8, link: 'level8.html'},
-            { num: 9, link: 'level9.html'},
-            { num: 10, link: 'level10.html'}
+            { num: 1, link: 'play.html?caller=1'},
+            { num: 2, link: 'play.html?caller=2'},
+            { num: 3, link: 'play.html?caller=3'},
+            { num: 4, link: 'play.html?caller=4'},
+            { num: 5, link: 'play.html?caller=5'},
+            { num: 6, link: 'play.html?caller=6'},
+            { num: 7, link: 'play.html?caller=7'},
+            { num: 8, link: 'play.html?caller=8'},
+            { num: 9, link: 'play.html?caller=9'},
+            { num: 10, link: 'play.html?caller=10'}
         ];
         
-        menu.innerHTML = levels.map(level => 
-            `<a href="${level.link}" style="text-decoration: none; color: inherit;">
-                <div style="padding: 12px 16px; cursor: pointer; transition: all 0.2s ease; border-radius: 4px; margin: 2px 0;"
-                     onmouseover="this.style.background='#f5f5f5'; this.style.color='#ED1C24';" 
-                     onmouseout="this.style.background='white'; this.style.color='inherit'">
+        menu.innerHTML = levels.map(level => {
+            const isDisabled = level.num > currentLevel;
+            return `<a href="${isDisabled ? '#' : level.link}" style="text-decoration: none; color: inherit; pointer-events: ${isDisabled ? 'none' : 'auto'};">
+                <div style="padding: 12px 16px; cursor: ${isDisabled ? 'not-allowed' : 'pointer'}; transition: all 0.2s ease; border-radius: 8px; margin: 2px 0; background: ${isDisabled ? 'white' : 'white'}; color: ${isDisabled ? '#a0a0a0' : 'inherit'};"
+                     onmouseover="if(!${isDisabled}) { this.style.background='#f5f5f5'; this.style.color='#ED1C24'; }" 
+                     onmouseout="if(!${isDisabled}) { this.style.background='white'; this.style.color='inherit'; }">
                     Level ${level.num}
                 </div>
-            </a>`
-        ).join('');
+            </a>`;
+        }).join('');
     } else {
         menu.style.display = 'none';
     }
 }
 
-// Add media query in JavaScript
 function updateMenuWidth() {
     const menu = document.getElementById('levelMenu');
     if (window.innerWidth <= 768) {
