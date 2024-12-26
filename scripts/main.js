@@ -105,23 +105,6 @@ async function query(sql, successCallback, errorCallback) {
   }
 }
 
-// Transform PGLite results to match sql.js format
-function transformResult(pgliteResult) {
-  if (!pgliteResult || !pgliteResult.rows) {
-    return [{ columns: [], values: [] }];
-  }
-
-  const columns = Object.keys(pgliteResult.rows[0] || {});
-  const values = pgliteResult.rows.map(row => 
-    columns.map(col => row[col])
-  );
-
-  return [{
-    columns: columns,
-    values: values
-  }];
-}
-
 // Datatable function remains the same
 function datatable(data) {
   var tbl = document.createElement("table");

@@ -4355,24 +4355,18 @@ nav ul {
     font-size: 1.6rem;
     font-weight: normal;
 }
-@media only screen and (min-width: 768px) and (max-width: 992px) {
     .navbar .nav-mobile-menu,
     .navbar li.nav-mobile-menu {
         display: none;
     }
-}
-@media only screen and (min-width: 992px) and (max-width: 1200px) {
     .navbar .nav-mobile-menu,
     .navbar li.nav-mobile-menu {
         display: none;
     }
-}
-@media only screen and (min-width: 1200px) {
     .navbar .nav-mobile-menu,
     .navbar li.nav-mobile-menu {
         display: none;
     }
-}
 @media only screen and (min-width: 768px) and (max-width: 992px) {
     .navbar ul li {
         height: 100%;
