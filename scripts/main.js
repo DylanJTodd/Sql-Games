@@ -1,5 +1,5 @@
-const scriptUrl = new URL(import.meta.url);
-const caller = scriptUrl.searchParams.get('caller');
+const urlParams = new URLSearchParams(window.location.search);
+const caller = urlParams.get('caller');
 
 import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15/dist/index.js';
 
@@ -68,7 +68,16 @@ function specificLoad()
   if (caller == "index"){loadData('sql/mock_database.sql')}
   else
   {
-    //Implement functionality to load different databases for level template
+    if (caller == "1"){loadData('sql/level1.sql')}
+    if (caller == "2"){loadData('sql/level2.sql')}
+    if (caller == "3"){loadData('sql/level3.sql')}
+    if (caller == "4"){loadData('sql/level4.sql')}
+    if (caller == "5"){loadData('sql/level5.sql')}
+    if (caller == "6"){loadData('sql/level6.sql')}
+    if (caller == "7"){loadData('sql/level7.sql')}
+    if (caller == "8"){loadData('sql/level8.sql')}
+    if (caller == "9"){loadData('sql/level9.sql')}
+    if (caller == "10"){loadData('sql/level10.sql')}
   }
 }
 

@@ -4,7 +4,6 @@ const caller = urlParams.get('caller');
 let gameState = 0;
 
 function setGameState() {
-    console.log('caller: ' + caller);
     gameState = parseInt(caller, 10);
 }
 
@@ -26,12 +25,39 @@ function loadLevel()
     setGameState();
     let currentLevel = checkLevel();
 
-    console.log('gameState: ' + gameState + ' currentLevel: ' + currentLevel);
-
     if (gameState > currentLevel || isNaN(gameState) || gameState < 1 || gameState > 10) 
     {
         window.location.href = 'play.html?caller=' + currentLevel;
     }
+
+    // Level 1 -----------------------------------
+    
+    if (gameState == 1)
+    {
+        let levelNum = document.getElementById('level-number');
+        let levelTagline = document.getElementById('level-tagline');
+        let scenarioText = document.getElementById('scenario-text');
+        let schemaLink = document.getElementById('experienced-schema');
+
+        let sql_solution = document.getElementById('sql-solution-div');
+
+        levelNum.innerText = 'Level 1';
+
+        levelTagline.innerText = 'Marble Count';
+
+        scenarioText.innerHTML = 'Welcome to the first level of the SQL Games! Hahahehehoho! <i>cough cough ahem</i>. In this level, we\'re starting with the basics. You will be counting how many <b>RED</b> marbles, weighing <b>UNDER 0.8LBS</b>, and are <b>SMALLER THAN 5CM</b> in diameter are in this jar';
+
+        schemaLink.src = 'images/schemas/level1.jpg';
+        schemaLink.width = '300';
+
+        sql_solution.setAttribute('data-question', 'Did you count correctly?');
+        sql_solution.setAttribute('data-default-text', `INSERT INTO solution VALUES (1, 'Insert how many marbles you counted');
+        
+        SELECT value FROM solution;`);
+    }
+
+    // Level 1 -----------------------------------
+
 }
 
 loadLevel();
