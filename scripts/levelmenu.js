@@ -2,6 +2,7 @@ function toggleMenu() {
     const menu = document.getElementById('levelMenu');
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
+        if (localStorage.getItem('currentLevel') === null) { localStorage.setItem('currentLevel', 1);}
         const currentLevel = parseInt(localStorage.getItem('currentLevel'), 10) || 0;
         const levels = [
             { num: 1, link: 'play.html?caller=1'},
