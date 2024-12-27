@@ -6,6 +6,7 @@ import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15
 
 let pglite;
 let isInitialized = false;
+let solution_string = '';
 
 // Load data from a SQL file(string) and execute the commands
 export async function loadData(sqlCommandsString) {
@@ -123,6 +124,7 @@ async function specificLoad() {
           throw new Error(`Invalid caller: ${caller}`);
       }
       await loadData(link);
+      await SetSolution(parseInt(caller, 10));
     } catch (err) {
       console.error('Error processing level data:', err);
     }
@@ -174,6 +176,54 @@ async function extrapolateData(lvl)
   return '';
 }
 
+async function SetSolution(lvl) {
+  if (lvl === 1) {
+    const sql_query = `
+      SELECT COUNT(*) AS count 
+      FROM marble 
+      WHERE color = 'red' 
+        AND weight <= 2 
+        AND size <= 5;
+    `;
+    
+    try 
+    {
+      // Execute the query using the utility function
+      const result = await query(sql_query);
+      
+      // Check if the result has the expected structure
+      if (result.length > 0 && result[0].values.length > 0) 
+      {
+        const count = result[0].values[0][0];
+        solution_string = String(count);
+      } 
+      else 
+      {
+        console.error('No rows returned from the count query.');
+        solution_string = '0';
+      }
+    } catch (err) 
+    {
+      console.error('Error executing count query:', err);
+      solution_string = '0';
+    }
+  }  
+  
+  else if (lvl === 2) 
+  {
+  }
+}
+
+function NextLevel() 
+{
+  let currentLevel = parseInt(caller, 10);
+  currentLevel++;
+  if (localStorage.getItem('currentLevel') < currentLevel) 
+  {
+    localStorage.setItem('currentLevel', currentLevel);
+  }
+}
+
 // Query utility function
 async function query(sql, successCallback, errorCallback) {
   if (!pglite || !isInitialized) {
@@ -186,8 +236,26 @@ async function query(sql, successCallback, errorCallback) {
   }
 
   try {
-    const result = await pglite.query(sql);
-    
+    // Split the input string into individual SQL commands
+    const commands = sql
+      .split(';')
+      .map(cmd => cmd.trim())
+      .filter(cmd => cmd.length > 0);
+
+    let lastResult;
+    for (const command of commands) {
+      if (command) {
+        try {
+          lastResult = await pglite.query(command);
+        } catch (cmdError) {
+          console.error('Error executing command:', command, cmdError);
+          throw cmdError; // Rethrow the error to be caught below
+        }
+      }
+    }
+
+    const result = lastResult;
+
     const transformedResult = [{
       columns: result.fields ? result.fields.map(f => f.name) : [],
       values: result.rows ? result.rows.map(row => Object.values(row)) : []
@@ -366,9 +434,8 @@ class sqlExercise extends HTMLElement {
     var question = this.getAttribute('data-question') || '';
     var comment = this.getAttribute('data-comment') || '';
     var defaultText = this.getAttribute('data-default-text') || '';
-    var solution = this.getAttribute('data-solution') || '';
     var orderSensitive = this.getAttribute('data-orderSensitive') || false;
-
+    
     var homeDiv = document.createElement('div');
     homeDiv.className = 'sqlExHomeDiv';
 
@@ -385,6 +452,7 @@ class sqlExercise extends HTMLElement {
     var form = document.createElement('form');
 
     // Input Area
+    var form = document.createElement('form');
     var inputArea = document.createElement('div');
     inputArea.className = 'sqlExInputArea';
 
@@ -413,53 +481,130 @@ class sqlExercise extends HTMLElement {
     form['onsubmit'] = async (e) => {
       e && e.preventDefault();
       var result_div = document.createElement('div');
-
+    
+      result_div.style.overflow = 'hidden';
+    
       var handleSubmit = async (submission_data) => {
         result_div.className = 'returnOkay';
-
-        if (solution) {
+    
+        var expected_value = this.getAttribute('data-solution') || solution_string || '';
+    
+        try {
+          let user_solution_result = await query('SELECT value FROM solution WHERE "user" = 1;');
+    
           var verdict_div = document.createElement('div');
+    
+          verdict_div.style.fontWeight = '800';
+          verdict_div.style.fontSize = '1.2em';
+          verdict_div.style.color = '#ED1C24';
+    
           result_div.appendChild(verdict_div);
-
-          try {
-            const solution_data = await query(solution);
-            var submission_u = submission_data[0].values;
-            var solution_u = solution_data[0].values;
-            if (!orderSensitive) {
-                submission_u.sort();
-                solution_u.sort();
-            }
-            var verdict = arraysEqual(submission_u, solution_u) ? "Correct" : "Incorrect";
-            verdict_div.innerText = verdict;
-          } catch (err) {
-            console.error('Error checking solution:', err);
-            verdict_div.innerText = 'Error checking solution';
-          }
-        }
+    
+          if (user_solution_result.length > 0 && user_solution_result[0].values.length > 0) {
+            var user_value = user_solution_result[0].values[0][0]; // Assuming 'value' is the first column
         
+            if (user_value == expected_value) {
+                // Correct answer
+                verdict_div.innerText = 'Congratulations! That\'s the correct answer!';
+        
+                // Create the button and link dynamically
+                const buttonDiv = document.createElement('div');
+                buttonDiv.style.textAlign = 'left'; // Align button to the left
+                buttonDiv.style.margin = '0';
+                buttonDiv.style.padding = '0';
+        
+                const link = document.createElement('a');
+                link.href = 'play.html?caller=' + (parseInt(caller, 10) + 1);
+                link.style.textDecoration = 'none';
+                
+                const button = document.createElement('button');
+                button.style.padding = '0';
+                button.style.width = '30vw';
+                button.style.minWidth = '200px';
+                button.style.height = '5vh';
+                button.style.minHeight = '20px';
+                button.style.maxHeight = '50px';
+                button.style.borderRadius = '12px';
+                button.style.backgroundColor = '#ED1C24';
+                button.style.color = 'white';
+                button.style.border = 'none';
+                button.style.cursor = 'pointer';
+                button.style.marginTop = '16px';
+                button.style.marginBottom = '16px';
+        
+                const buttonText = document.createElement('b');
+                const p = document.createElement('p');
+                p.style.margin = '0';
+                p.style.padding = '0';
+                p.style.fontSize = 'x-large';
+                p.innerText = 'Next Level';
+        
+                // Append all elements together
+                buttonText.appendChild(p);
+                button.appendChild(buttonText);
+                link.appendChild(button);
+                buttonDiv.appendChild(link);
+        
+                // Append the buttonDiv below the verdict message
+                verdict_div.appendChild(buttonDiv);
+        
+                // Add an event listener to manually trigger the link click
+                button.addEventListener('click', function() {
+                    window.location.href = link.href; // This will follow the link
+                });
+        
+                // Call the function for the next level
+                NextLevel();
+            } else {
+                // Incorrect answer
+                verdict_div.innerText = 'Sorry! You got it wrong. Try again!';
+            }
+        
+            await query('DELETE FROM solution;');
+        }
+        } catch (err) {
+          console.error('Error checking solution:', err);
+    
+          var error_div = document.createElement('div');
+    
+          // Apply styles to error_div
+          error_div.style.fontWeight = '600';
+          error_div.style.color = '#ED1C24';
+    
+          error_div.innerText = 'Error checking solution';
+          result_div.appendChild(error_div);
+        }
+    
+        // Then display the result(s) of the user's query
         if (submission_data.length > 0) {
           result_div.appendChild(datatable(submission_data));
         } else {
           result_div.insertAdjacentHTML("beforeend", `No data returned`);
         }
-      }
-
+      };
+    
       var handleError = (e) => {
         result_div.className = 'returnError';
+        
+        // Apply styles to result_div for error
+        result_div.style.fontWeight = '600';
+        result_div.style.color = '#ED1C24';
+    
         result_div.innerText = e.message;
-      }
-
+      };
+    
       try {
         const results = await query(editor.getValue());
         await handleSubmit(results);
       } catch (err) {
         handleError(err);
       }
-      
+    
+      // Clear previous output and display the new result
       outputBox.innerHTML = '';
       outputBox.appendChild(result_div);
     };
-
+    
     var resetButton = document.createElement('input');
     resetButton.type = 'button';
     resetButton.value = 'Reset';
