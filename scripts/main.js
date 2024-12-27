@@ -85,7 +85,8 @@ async function specificLoad() {
     } catch (err) {
       console.error('Error loading SQL file:', err);
     }
-  } else {
+  } else 
+  {
     try {
       let link;
       switch (caller) {
@@ -121,7 +122,7 @@ async function specificLoad() {
           break;
 
         default:
-          throw new Error(`Invalid caller: ${caller}`);
+          window.location.href = 'index.html?caller=index';
       }
       await loadData(link);
       await SetSolution(parseInt(caller, 10));
