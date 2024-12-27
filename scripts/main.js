@@ -133,17 +133,13 @@ async function specificLoad() {
 }
 
 // Extrapolate and autopopulate data for each level
-async function extrapolateData(lvl) 
-{
+async function extrapolateData(lvl) {
   // Level 1 ----------------------------------------------------------------------------------
-  if (lvl === 1) 
-  {
+  if (lvl === 1) {
     let fileUrl = 'sql/level1.sql';
-    try 
-    {
+    try {
       const response = await fetch(fileUrl);
-      if (!response.ok) 
-      {
+      if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       let fileContents = await response.text();
@@ -152,8 +148,7 @@ async function extrapolateData(lvl)
       let weights = Array.from({ length: 21 }, (_, i) => parseFloat((1 + i * 0.1).toFixed(1)));
 
       // Generate values list 
-      let valuesList = Array.from({ length: 10000 }, () => 
-      {
+      let valuesList = Array.from({ length: 10000 }, () => {
         let color = colors[Math.floor(Math.random() * colors.length)];
         let size = sizes[Math.floor(Math.random() * sizes.length)];
         let weight = weights[Math.floor(Math.random() * weights.length)];
@@ -163,19 +158,60 @@ async function extrapolateData(lvl)
       let insertStatement = `INSERT INTO Marble (Color, Size, Weight) VALUES\n${valuesList};`;
 
       return fileContents + '\n' + insertStatement;
-    } catch (error) 
-    {
+    } catch (error) {
       console.error('Error:', error);
       return '';
     }
   }
 
   // Level 2 ----------------------------------------------------------------------------------
-  if (lvl === 2) 
-  {
+  if (lvl === 2) {
+    let fileUrl = 'sql/level2.sql';
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      let fileContents = await response.text();
+
+      let shapes = ['square', 'star', 'umbrella', 'triangle'];
+      let difficulties = Array.from({ length: 100 }, (_, i) => i + 1);
+      let valuesList = [];
+      let solutionRow = null;
+
+      for (let i = 1; i <= 1000; i++) {
+        let shape = shapes[Math.floor(Math.random() * shapes.length)];
+        let difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+        let isWet = Math.random() < 0.5;
+
+        // Ensure solution row is unique
+        if (!solutionRow && shape === 'star' && isWet === true && difficulty === Math.min(...difficulties)) {
+          solutionRow = i;
+        }
+
+        if (i === 1000 && !solutionRow) {
+          // If no solution row was created, make this the solution row
+          shape = 'star';
+          difficulty = Math.min(...difficulties);
+          isWet = true;
+          solutionRow = i;
+        }
+
+        valuesList.push(`(${i}, '${shape}', ${difficulty}, ${isWet})`);
+      }
+
+      let insertStatement = `INSERT INTO Honeycomb (id, Shape, Difficulty, iswet) VALUES\n${valuesList.join(',\n')};`;
+
+      return fileContents + '\n' + insertStatement + `\n-- Solution ID: ${solutionRow}`;
+    } catch (error) {
+      console.error('Error:', error);
+      return '';
+    }
   }
+
   return '';
 }
+
 
 async function SetSolution(lvl) {
   if (lvl === 1) {
@@ -187,33 +223,53 @@ async function SetSolution(lvl) {
         AND size <= 5;
     `;
     
-    try 
-    {
+    try {
       // Execute the query using the utility function
       const result = await query(sql_query);
       
       // Check if the result has the expected structure
-      if (result.length > 0 && result[0].values.length > 0) 
-      {
+      if (result.length > 0 && result[0].values.length > 0) {
         const count = result[0].values[0][0];
         solution_string = String(count);
-      } 
-      else 
-      {
+      } else {
         console.error('No rows returned from the count query.');
         solution_string = '0';
       }
-    } catch (err) 
-    {
+    } catch (err) {
       console.error('Error executing count query:', err);
       solution_string = '0';
     }
   }  
   
-  else if (lvl === 2) 
-  {
+  else if (lvl === 2) {
+    const sql_query = `
+      SELECT id 
+      FROM Honeycomb 
+      WHERE Shape = 'star' 
+        AND iswet = true 
+      ORDER BY Difficulty ASC 
+      LIMIT 1;
+    `;
+    
+    try {
+      // Execute the query using the utility function
+      const result = await query(sql_query);
+      
+      // Check if the result has the expected structure
+      if (result.length > 0 && result[0].values.length > 0) {
+        const id = result[0].values[0][0];
+        solution_string = String(id);
+      } else {
+        console.error('No rows returned from the solution query.');
+        solution_string = '0';
+      }
+    } catch (err) {
+      console.error('Error executing solution query:', err);
+      solution_string = '0';
+    }
   }
 }
+
 
 function NextLevel() 
 {
