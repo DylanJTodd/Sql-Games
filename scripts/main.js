@@ -7,35 +7,42 @@ import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15
 let pglite; // Global instance
 let isInitialized = false;
 
-export async function loadData(sqlFile) {
-  if (!sqlFile) { return; }
+export async function loadData(sqlCommandsString) {
+  if (!sqlCommandsString) {
+    console.error('No SQL commands provided.');
+    return;
+  }
 
   try {
+    sqlCommandsString = String(sqlCommandsString);
+
     if (!isInitialized) {
       pglite = new PGlite();
       isInitialized = true;
     }
 
-    const response = await fetch(sqlFile);
-    if (!response.ok) {
-      throw new Error(`Failed to load SQL file: ${response.statusText}`);
-    }
-    
-    const sqlCommands = await response.text();
-
-    const commands = sqlCommands
+    // Split the input string into individual SQL commands
+    const commands = sqlCommandsString
       .split(';')
       .map(cmd => cmd.trim())
       .filter(cmd => cmd.length > 0);
 
-    for (const command of commands) {
-      if (command) {  // Only execute non-empty commands
-        try {
-          await pglite.query(command);
-        } catch (cmdError) {
-          console.error('Error executing command:', command, cmdError);
+    const batchSize = 50; // Adjust batch size as needed
+    for (let i = 0; i < commands.length; i += batchSize) {
+      const batchCommands = commands.slice(i, i + batchSize);
+
+      for (const command of batchCommands) {
+        if (command) {
+          try {
+            await pglite.query(command);
+          } catch (cmdError) {
+            console.error('Error executing command:', command, cmdError);
+          }
         }
       }
+
+      // Yield control to the event loop to keep the UI responsive
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
 
     try {
@@ -63,23 +70,107 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-function specificLoad()
-{
-  if (caller == "index"){loadData('sql/mock_database.sql')}
-  else
-  {
-    if (caller == "1"){loadData('sql/level1.sql')}
-    if (caller == "2"){loadData('sql/level2.sql')}
-    if (caller == "3"){loadData('sql/level3.sql')}
-    if (caller == "4"){loadData('sql/level4.sql')}
-    if (caller == "5"){loadData('sql/level5.sql')}
-    if (caller == "6"){loadData('sql/level6.sql')}
-    if (caller == "7"){loadData('sql/level7.sql')}
-    if (caller == "8"){loadData('sql/level8.sql')}
-    if (caller == "9"){loadData('sql/level9.sql')}
-    if (caller == "10"){loadData('sql/level10.sql')}
+async function specificLoad() {
+  if (caller === "index") {
+    try {
+      const response = await fetch('sql/mock_database.sql');
+      if (!response.ok) {
+        throw new Error(`Failed to load SQL file: ${response.statusText}`);
+      }
+      const sqlString = await response.text();
+      await loadData(sqlString); // Ensure this is awaited
+    } catch (err) {
+      console.error('Error loading SQL file:', err);
+    }
+  } else {
+    try {
+      let link;
+      switch (caller) {
+        case "1":
+          link = await extrapolateData(1);
+          break;
+        case "2":
+          link = await extrapolateData(2);
+          break;
+        case "3":
+          link = await extrapolateData(3);
+          break;
+        case "4":
+          link = await extrapolateData(4);
+          break;
+        case "5":
+          link = await extrapolateData(1);
+          break;
+        case "6":
+          link = await extrapolateData(2);
+          break;
+        case "7":
+          link = await extrapolateData(3);
+          break;
+        case "8":
+          link = await extrapolateData(4);
+          break;
+        case "9":
+          link = await extrapolateData(3);
+          break;
+        case "10":
+          link = await extrapolateData(4);
+          break;
+
+        default:
+          throw new Error(`Invalid caller: ${caller}`);
+      }
+      await loadData(link); // Ensure this is awaited
+    } catch (err) {
+      console.error('Error processing level data:', err);
+    }
   }
 }
+
+async function extrapolateData(lvl) 
+{
+  // Level 1 ----------------------------------------------------------------------------------
+  if (lvl === 1) 
+  {
+    let fileUrl = 'sql/level1.sql';
+    try 
+    {
+      const response = await fetch(fileUrl);
+      if (!response.ok) 
+      {
+        throw new Error('Network response was not ok');
+      }
+      let fileContents = await response.text();
+      let colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'brown'];
+      let sizes = Array.from({ length: 10 }, (_, i) => i + 1);
+      let weights = Array.from({ length: 21 }, (_, i) => parseFloat((1 + i * 0.1).toFixed(1)));
+
+      // Generate values list 
+      let valuesList = Array.from({ length: 10000 }, () => 
+      {
+        let color = colors[Math.floor(Math.random() * colors.length)];
+        let size = sizes[Math.floor(Math.random() * sizes.length)];
+        let weight = weights[Math.floor(Math.random() * weights.length)];
+        return `('${color}', ${size}, ${weight})`;
+      }).join(',\n');
+
+      let insertStatement = `INSERT INTO Marble (Color, Size, Weight) VALUES\n${valuesList};`;
+
+      return fileContents + '\n' + insertStatement;
+    } catch (error) 
+    {
+      console.error('Error:', error);
+      return '';
+    }
+  }
+
+  // Level 2 ----------------------------------------------------------------------------------
+  if (lvl === 1) 
+  {
+  }
+  return '';
+}
+
 
 async function query(sql, successCallback, errorCallback) {
   if (!pglite || !isInitialized) {

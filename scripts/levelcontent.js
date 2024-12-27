@@ -45,7 +45,7 @@ function loadLevel()
 
         levelTagline.innerText = 'Marble Count';
 
-        scenarioText.innerHTML = 'Welcome to the first level of the SQL Games! Hahahehehoho! <i>cough cough ahem</i>. In this level, we\'re starting with the basics. You will be counting how many <b>RED</b> marbles, weighing <b>UNDER 0.8LBS</b>, and are <b>SMALLER THAN 5CM</b> in diameter are in this jar';
+        scenarioText.innerHTML = 'Welcome to the first level of the SQL Games! Hahahehehoho! <i>cough cough ahem</i>. In this level, we\'re starting with the basics. You will be counting how many <b>RED</b> marbles, weighing <b>2LBS OR UNDER</b>, and are <b>5CM OR SMALLER</b> in diameter are in this jar';
 
         schemaLink.src = 'images/schemas/level1.jpg';
         schemaLink.width = '300';
