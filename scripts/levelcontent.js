@@ -51,9 +51,7 @@ function loadLevel()
         schemaLink.width = '300';
 
         sql_solution.setAttribute('data-question', 'Did you count correctly?');
-        sql_solution.setAttribute('data-default-text', `INSERT INTO solution VALUES (1, 'Insert how many marbles you counted');
-        
-        SELECT value FROM solution;`);
+        sql_solution.setAttribute('data-default-text', `INSERT INTO solution VALUES (1, 'Insert how many marbles you counted');`);
     }
 
     // Level 1 -----------------------------------
