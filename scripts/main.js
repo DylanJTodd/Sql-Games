@@ -278,35 +278,54 @@ async function query(sql, successCallback, errorCallback) {
 
 // Datatable utility function
 function datatable(data) {
-  var tbl = document.createElement("table");
-  tbl.className = 'datatable'
+    var tbl = document.createElement("table");
+    tbl.className = 'datatable';
 
-  var header_labels = data[0].columns;
-  for (var idx in header_labels) {
-    var col = document.createElement('col');
-    col.className = header_labels[idx];
-    tbl.appendChild(col);
-  }
-
-  // create header row
-  var thead = tbl.createTHead();
-  var row = thead.insertRow(0);
-  for (var idx in header_labels) {
-    var cell = row.insertCell(idx);
-    cell.innerHTML = header_labels[idx];
-  }
-
-  // fill table body
-  var tbody = document.createElement("tbody");
-  for (var row_idx in data[0]['values']) {
-    var body_row = tbody.insertRow();
-    for (var header_idx in header_labels) {
-      var body_cell = body_row.insertCell();
-      body_cell.appendChild(document.createTextNode(data[0]['values'][row_idx][header_idx]));
+    var header_labels = data[0].columns;
+    for (var idx in header_labels) {
+        var col = document.createElement('col');
+        col.className = header_labels[idx];
+        tbl.appendChild(col);
     }
-  }
-  tbl.appendChild(tbody);
-  return tbl;
+
+    // create header row
+    var thead = tbl.createTHead();
+    var row = thead.insertRow(0);
+    for (var idx in header_labels) {
+        var cell = row.insertCell(idx);
+        cell.innerHTML = header_labels[idx];
+    }
+
+    // fill table body
+    var tbody = document.createElement("tbody");
+    const rowLimit = 20;
+    const totalRows = data[0]['values'].length;
+    
+    // Only show up to 20 rows
+    for (var row_idx = 0; row_idx < Math.min(rowLimit, totalRows); row_idx++) {
+        var body_row = tbody.insertRow();
+        for (var header_idx in header_labels) {
+            var body_cell = body_row.insertCell();
+            body_cell.appendChild(document.createTextNode(data[0]['values'][row_idx][header_idx]));
+        }
+    }
+    tbl.appendChild(tbody);
+
+    // Create a container div to hold both table and message
+    var container = document.createElement('div');
+    container.appendChild(tbl);
+
+    // Add message if there are more than 20 rows
+    if (totalRows > rowLimit) {
+        var message = document.createElement('div');
+        message.style.marginTop = '10px';
+        message.style.fontStyle = 'italic';
+        message.style.color = '#666';
+        message.textContent = `Output limited to ${rowLimit} rows (${totalRows} total rows)`;
+        container.appendChild(message);
+    }
+
+    return container;
 }
 
 // Set difference utility function
