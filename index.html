@@ -163,7 +163,8 @@
                 <!-- Fix issue tomorrow -->
                 <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT table_name 
   FROM information_schema.tables 
- WHERE table_schema = 'public';"></sql-exercise>
+ WHERE table_schema = 'public';
+ --clone=false"></sql-exercise>
 
             </div>
         </div>
@@ -176,7 +177,8 @@
 
                 <sql-exercise data-question="Run the below query to find the structure of the `user` table" data-comment="Tip: You can change the value of `user` to match any of the other names you saw in the previous query." data-default-text="SELECT table_schema, table_name, column_name, data_type, is_nullable
   FROM information_schema.columns
- WHERE table_name = 'users';"></sql-exercise>
+ WHERE table_name = 'users';
+ --clone=false"></sql-exercise>
 
                 <p>
                     Alternatively, each level will provide the option to <a id="show-schema" style="cursor: pointer;">click</a> and show the schema diagram.

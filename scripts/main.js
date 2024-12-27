@@ -446,197 +446,280 @@ customElements.define('sql-quiz', sqlQuiz);
 
 // SQL Exercise Component
 class sqlExercise extends HTMLElement {
+  shouldDisableCloning(text) {
+      return text.includes('--clone=false');
+  }
+
+  cleanSQLForExecution(text) {
+      return text.replace(/--.*$/gm, '').trim();
+  }
+
   constructor() {
-    super();
+      super();
   }
 
   connectedCallback() {
-    var question = this.getAttribute('data-question') || '';
-    var comment = this.getAttribute('data-comment') || '';
-    var defaultText = this.getAttribute('data-default-text') || '';
-    var orderSensitive = this.getAttribute('data-orderSensitive') || false;
-    
-    var homeDiv = document.createElement('div');
-    homeDiv.className = 'sqlExHomeDiv';
+      var question = this.getAttribute('data-question') || '';
+      var comment = this.getAttribute('data-comment') || '';
+      var defaultText = this.getAttribute('data-default-text') || '';
+      var orderSensitive = this.getAttribute('data-orderSensitive') || false;
+      
+      var homeDiv = document.createElement('div');
+      homeDiv.className = 'sqlExHomeDiv';
 
-    if (question) {
-      var caption = `<div class="sqlExQuestion">${question}</div>`;
-      homeDiv.insertAdjacentHTML("beforeend", caption);
-    }
-
-    if (comment) {
-      var commentbox = `<div class = 'sqlExComment'>${comment}</div>`;
-      homeDiv.insertAdjacentHTML("beforeend", commentbox);
-    }
-
-    var form = document.createElement('form');
-
-    // Input Area
-    var form = document.createElement('form');
-    var inputArea = document.createElement('div');
-    inputArea.className = 'sqlExInputArea';
-
-    var textArea = document.createElement('textarea');
-    textArea.textContent = defaultText;
-    textArea.name = 'input';
-    inputArea.appendChild(textArea);
-
-    var editor = CodeMirror.fromTextArea(textArea, {
-      mode: 'text/x-sql',
-      indentWithTabs: true,
-      smartIndent: true,
-      lineNumbers: true,
-      textWrapping: false,
-      autoRefresh: true,
-      theme: 'neat',
-      viewportMargin: Infinity
-    });
-
-    editor.setSize('100%', 'auto');
-    editor.refresh();
-
-    var runButton = `<input class="sql-exercise-submit" type="submit" value="Run &#x21e9;" disabled>`;
-    inputArea.insertAdjacentHTML("beforeend", runButton);
-
-    form['onsubmit'] = async (e) => {
-      e && e.preventDefault();
-      var result_div = document.createElement('div');
-    
-      result_div.style.overflow = 'hidden';
-    
-      var handleSubmit = async (submission_data) => {
-        result_div.className = 'returnOkay';
-    
-        var expected_value = this.getAttribute('data-solution') || solution_string || '';
-    
-        try {
-          let user_solution_result = await query('SELECT value FROM solution WHERE "user" = 1;');
-    
-          var verdict_div = document.createElement('div');
-    
-          verdict_div.style.fontWeight = '800';
-          verdict_div.style.fontSize = '1.2em';
-          verdict_div.style.color = '#ED1C24';
-    
-          result_div.appendChild(verdict_div);
-    
-          if (user_solution_result.length > 0 && user_solution_result[0].values.length > 0) {
-            var user_value = user_solution_result[0].values[0][0]; // Assuming 'value' is the first column
-        
-            if (user_value == expected_value) {
-                // Correct answer
-                verdict_div.innerText = 'Congratulations! That\'s the correct answer!';
-        
-                // Create the button and link dynamically
-                const buttonDiv = document.createElement('div');
-                buttonDiv.style.textAlign = 'left'; // Align button to the left
-                buttonDiv.style.margin = '0';
-                buttonDiv.style.padding = '0';
-        
-                const link = document.createElement('a');
-                link.href = 'play.html?caller=' + (parseInt(caller, 10) + 1);
-                link.style.textDecoration = 'none';
-                
-                const button = document.createElement('button');
-                button.style.padding = '0';
-                button.style.width = '30vw';
-                button.style.minWidth = '200px';
-                button.style.height = '5vh';
-                button.style.minHeight = '20px';
-                button.style.maxHeight = '50px';
-                button.style.borderRadius = '12px';
-                button.style.backgroundColor = '#ED1C24';
-                button.style.color = 'white';
-                button.style.border = 'none';
-                button.style.cursor = 'pointer';
-                button.style.marginTop = '16px';
-                button.style.marginBottom = '16px';
-        
-                const buttonText = document.createElement('b');
-                const p = document.createElement('p');
-                p.style.margin = '0';
-                p.style.padding = '0';
-                p.style.fontSize = 'x-large';
-                p.innerText = 'Next Level';
-        
-                // Append all elements together
-                buttonText.appendChild(p);
-                button.appendChild(buttonText);
-                link.appendChild(button);
-                buttonDiv.appendChild(link);
-        
-                // Append the buttonDiv below the verdict message
-                verdict_div.appendChild(buttonDiv);
-        
-                // Add an event listener to manually trigger the link click
-                button.addEventListener('click', function() {
-                    window.location.href = link.href; // This will follow the link
-                });
-        
-                // Call the function for the next level
-                NextLevel();
-            } else {
-                // Incorrect answer
-                verdict_div.innerText = 'Sorry! You got it wrong. Try again!';
-            }
-        
-            await query('DELETE FROM solution;');
-        }
-        } catch (err) {
-          console.error('Error checking solution:', err);
-        }
-    
-        // Then display the result(s) of the user's query
-        if (submission_data.length > 0) {
-          result_div.appendChild(datatable(submission_data));
-        } else {
-          result_div.insertAdjacentHTML("beforeend", `No data returned`);
-        }
-      };
-    
-      var handleError = (e) => {
-        result_div.className = 'returnError';
-        
-        // Apply styles to result_div for error
-        result_div.style.fontWeight = '600';
-        result_div.style.color = '#ED1C24';
-    
-        result_div.innerText = e.message;
-      };
-    
-      try {
-        const results = await query(editor.getValue());
-        await handleSubmit(results);
-      } catch (err) {
-        handleError(err);
+      if (question) {
+          var caption = `<div class="sqlExQuestion">${question}</div>`;
+          homeDiv.insertAdjacentHTML("beforeend", caption);
       }
-    
-      // Clear previous output and display the new result
-      outputBox.innerHTML = '';
-      outputBox.appendChild(result_div);
-    };
-    
-    var resetButton = document.createElement('input');
-    resetButton.type = 'button';
-    resetButton.value = 'Reset';
-    resetButton.onclick = (e) => {
-      editor.setValue(defaultText);
-      outputBox.textContent = '';
-    };
-    inputArea.appendChild(resetButton);
-    form.appendChild(inputArea);
 
-    // Output Area
-    var outputArea = document.createElement('div');
-    outputArea.className = 'sqlExOutputArea';
+      if (comment) {
+          var commentbox = `<div class = 'sqlExComment'>${comment}</div>`;
+          homeDiv.insertAdjacentHTML("beforeend", commentbox);
+      }
 
-    var outputBox = document.createElement('output');
-    outputBox.name = 'output';
-    outputArea.appendChild(outputBox);
-    form.appendChild(outputArea);
+      var form = document.createElement('form');
 
-    homeDiv.appendChild(form);
-    this.appendChild(homeDiv);
+      // Input Area
+      var form = document.createElement('form');
+      var inputArea = document.createElement('div');
+      inputArea.className = 'sqlExInputArea';
+
+      var textArea = document.createElement('textarea');
+      textArea.textContent = defaultText;
+      textArea.name = 'input';
+      inputArea.appendChild(textArea);
+
+      var editor = CodeMirror.fromTextArea(textArea, {
+          mode: 'text/x-sql',
+          indentWithTabs: true,
+          smartIndent: true,
+          lineNumbers: true,
+          textWrapping: false,
+          autoRefresh: true,
+          theme: 'neat',
+          viewportMargin: Infinity
+      });
+
+      editor.setSize('100%', 'auto');
+      editor.refresh();
+
+      var runButton = `<input class="sql-exercise-submit" type="submit" value="Run &#x21e9;" disabled>`;
+      inputArea.insertAdjacentHTML("beforeend", runButton);
+
+      form['onsubmit'] = async (e) => {
+          e && e.preventDefault();
+          var result_div = document.createElement('div');
+          
+          result_div.style.overflow = 'hidden';
+          
+          var handleSubmit = async (submission_data) => {
+              result_div.className = 'returnOkay';
+          
+              var expected_value = this.getAttribute('data-solution') || solution_string || '';
+          
+              try {
+                  let user_solution_result = await query('SELECT value FROM solution WHERE "user" = 1;');
+          
+                  var verdict_div = document.createElement('div');
+          
+                  verdict_div.style.fontWeight = '800';
+                  verdict_div.style.fontSize = '1.2em';
+                  verdict_div.style.color = '#ED1C24';
+          
+                  result_div.appendChild(verdict_div);
+          
+                  if (user_solution_result.length > 0 && user_solution_result[0].values.length > 0) {
+                      var user_value = user_solution_result[0].values[0][0];
+                  
+                      if (user_value == expected_value) {
+                          verdict_div.innerText = 'Congratulations! That\'s the correct answer!';
+                  
+                          const buttonDiv = document.createElement('div');
+                          buttonDiv.style.textAlign = 'left';
+                          buttonDiv.style.margin = '0';
+                          buttonDiv.style.padding = '0';
+                  
+                          const link = document.createElement('a');
+                          link.href = 'play.html?caller=' + (parseInt(caller, 10) + 1);
+                          link.style.textDecoration = 'none';
+                          
+                          const button = document.createElement('button');
+                          button.style.padding = '0';
+                          button.style.width = '30vw';
+                          button.style.minWidth = '200px';
+                          button.style.height = '5vh';
+                          button.style.minHeight = '20px';
+                          button.style.maxHeight = '50px';
+                          button.style.borderRadius = '12px';
+                          button.style.backgroundColor = '#ED1C24';
+                          button.style.color = 'white';
+                          button.style.border = 'none';
+                          button.style.cursor = 'pointer';
+                          button.style.marginTop = '16px';
+                          button.style.marginBottom = '16px';
+                  
+                          const buttonText = document.createElement('b');
+                          const p = document.createElement('p');
+                          p.style.margin = '0';
+                          p.style.padding = '0';
+                          p.style.fontSize = 'x-large';
+                          p.innerText = 'Next Level';
+                  
+                          buttonText.appendChild(p);
+                          button.appendChild(buttonText);
+                          link.appendChild(button);
+                          buttonDiv.appendChild(link);
+                  
+                          verdict_div.appendChild(buttonDiv);
+                  
+                          button.addEventListener('click', function() {
+                              window.location.href = link.href;
+                          });
+                  
+                          NextLevel();
+                      } else {
+                          verdict_div.innerText = 'Sorry! You got it wrong. Try again!';
+                      }
+                  
+                      await query('DELETE FROM solution;');
+                  }
+              } catch (err) {
+                  console.error('Error checking solution:', err);
+              }
+          
+              if (submission_data.length > 0) {
+                  result_div.appendChild(datatable(submission_data));
+              } else {
+                  result_div.insertAdjacentHTML("beforeend", `No data returned`);
+              }
+          };
+          
+          var handleError = (e) => {
+              result_div.className = 'returnError';
+              result_div.style.fontWeight = '600';
+              result_div.style.color = '#ED1C24';
+              result_div.innerText = e.message;
+          };
+          
+          try {
+              const cleanedQuery = this.cleanSQLForExecution(editor.getValue());
+              const results = await query(cleanedQuery);
+              await handleSubmit(results);
+          } catch (err) {
+              handleError(err);
+          }
+          
+          outputBox.innerHTML = '';
+          outputBox.appendChild(result_div);
+
+          if (!form.querySelector('.new-input-area') && !this.shouldDisableCloning(editor.getValue())) {
+              createNewCell();
+          }
+      };
+      
+      var resetButton = document.createElement('input');
+      resetButton.type = 'button';
+      resetButton.value = 'Reset';
+      resetButton.onclick = (e) => {
+          editor.setValue(defaultText);
+          outputBox.textContent = '';
+      };
+      inputArea.appendChild(resetButton);
+      form.appendChild(inputArea);
+
+      // Output Area
+      var outputArea = document.createElement('div');
+      outputArea.className = 'sqlExOutputArea';
+
+      var outputBox = document.createElement('output');
+      outputBox.name = 'output';
+      outputArea.appendChild(outputBox);
+      form.appendChild(outputArea);
+
+      // Function to create new cell
+      const createNewCell = () => {
+          var newInputArea = document.createElement('div');
+          newInputArea.className = 'sqlExInputArea new-input-area';
+
+          var newTextArea = document.createElement('textarea');
+          newTextArea.name = 'input';
+          newTextArea.value = '\n\n\n';
+          newInputArea.appendChild(newTextArea);
+
+          var newEditor = CodeMirror.fromTextArea(newTextArea, {
+              mode: 'text/x-sql',
+              indentWithTabs: true,
+              smartIndent: true,
+              lineNumbers: true,
+              textWrapping: false,
+              autoRefresh: true,
+              theme: 'neat',
+              viewportMargin: Infinity
+          });
+
+          newEditor.setSize('100%', 'auto');
+          
+          var newRunButton = document.createElement('input');
+          newRunButton.className = 'sql-exercise-submit';
+          newRunButton.type = 'submit';
+          newRunButton.value = 'Run ↓';
+          newInputArea.appendChild(newRunButton);
+
+          var newResetButton = document.createElement('input');
+          newResetButton.type = 'button';
+          newResetButton.value = 'Reset';
+          newInputArea.appendChild(newResetButton);
+
+          var newOutputArea = document.createElement('div');
+          newOutputArea.className = 'sqlExOutputArea';
+          var newOutputBox = document.createElement('output');
+          newOutputBox.name = 'output';
+          newOutputArea.appendChild(newOutputBox);
+
+          form.appendChild(newInputArea);
+          form.appendChild(newOutputArea);
+
+          newResetButton.onclick = () => {
+              newEditor.setValue('\n\n\n');
+              newOutputBox.innerHTML = '';
+          };
+
+          newRunButton.onclick = async (e) => {
+              e.preventDefault();
+              var new_result_div = document.createElement('div');
+              new_result_div.style.overflow = 'hidden';
+
+              try {
+                  const cleanedQuery = this.cleanSQLForExecution(newEditor.getValue());
+                  const results = await query(cleanedQuery);
+                  if (results.length > 0) {
+                      new_result_div.className = 'returnOkay';
+                      new_result_div.appendChild(datatable(results));
+                  } else {
+                      new_result_div.className = 'returnOkay';
+                      new_result_div.insertAdjacentHTML("beforeend", `No data returned`);
+                  }
+              } catch (err) {
+                  new_result_div.className = 'returnError';
+                  new_result_div.style.fontWeight = '600';
+                  new_result_div.style.color = '#ED1C24';
+                  new_result_div.innerText = err.message;
+              }
+
+              newOutputBox.innerHTML = '';
+              newOutputBox.appendChild(new_result_div);
+
+              if ((!newOutputArea.nextElementSibling || !newOutputArea.nextElementSibling.classList.contains('sqlExInputArea')) 
+                  && !this.shouldDisableCloning(newEditor.getValue())) {
+                  createNewCell();
+              }
+          };
+
+          newEditor.refresh();
+      };
+
+      homeDiv.appendChild(form);
+      this.appendChild(homeDiv);
   }
 }
 
