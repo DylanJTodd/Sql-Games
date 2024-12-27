@@ -4,9 +4,10 @@ const caller = urlParams.get('caller');
 import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15/dist/index.js';
 
 
-let pglite; // Global instance
+let pglite;
 let isInitialized = false;
 
+// Load data from a SQL file(string) and execute the commands
 export async function loadData(sqlCommandsString) {
   if (!sqlCommandsString) {
     console.error('No SQL commands provided.');
@@ -61,7 +62,7 @@ export async function loadData(sqlCommandsString) {
   }
 }
 
-// Make sure the DOM is loaded before initializing
+// Initialize the database and load data when the DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await specificLoad();
@@ -70,6 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+// Determine the specific data to load based on the caller
 async function specificLoad() {
   if (caller === "index") {
     try {
@@ -78,7 +80,7 @@ async function specificLoad() {
         throw new Error(`Failed to load SQL file: ${response.statusText}`);
       }
       const sqlString = await response.text();
-      await loadData(sqlString); // Ensure this is awaited
+      await loadData(sqlString);
     } catch (err) {
       console.error('Error loading SQL file:', err);
     }
@@ -120,13 +122,14 @@ async function specificLoad() {
         default:
           throw new Error(`Invalid caller: ${caller}`);
       }
-      await loadData(link); // Ensure this is awaited
+      await loadData(link);
     } catch (err) {
       console.error('Error processing level data:', err);
     }
   }
 }
 
+// Extrapolate and autopopulate data for each level
 async function extrapolateData(lvl) 
 {
   // Level 1 ----------------------------------------------------------------------------------
@@ -171,7 +174,7 @@ async function extrapolateData(lvl)
   return '';
 }
 
-
+// Query utility function
 async function query(sql, successCallback, errorCallback) {
   if (!pglite || !isInitialized) {
     const error = new Error('Database not initialized');
@@ -185,7 +188,6 @@ async function query(sql, successCallback, errorCallback) {
   try {
     const result = await pglite.query(sql);
     
-    // Transform PGlite result to match the expected format
     const transformedResult = [{
       columns: result.fields ? result.fields.map(f => f.name) : [],
       values: result.rows ? result.rows.map(row => Object.values(row)) : []
@@ -205,7 +207,7 @@ async function query(sql, successCallback, errorCallback) {
   }
 }
 
-// Datatable function remains the same
+// Datatable utility function
 function datatable(data) {
   var tbl = document.createElement("table");
   tbl.className = 'datatable'
@@ -238,7 +240,7 @@ function datatable(data) {
   return tbl;
 }
 
-// Set difference utility function remains the same
+// Set difference utility function
 function setdiff(a, b) {
   var seta = new Set(a);
   var setb = new Set(b);
@@ -246,7 +248,7 @@ function setdiff(a, b) {
   return res;
 }
 
-// SQL Quiz Component
+// SQL Quiz Component 
 class sqlQuizOption extends HTMLElement {
   constructor() {
     super();
