@@ -564,15 +564,6 @@ class sqlExercise extends HTMLElement {
         }
         } catch (err) {
           console.error('Error checking solution:', err);
-    
-          var error_div = document.createElement('div');
-    
-          // Apply styles to error_div
-          error_div.style.fontWeight = '600';
-          error_div.style.color = '#ED1C24';
-    
-          error_div.innerText = 'Error checking solution';
-          result_div.appendChild(error_div);
         }
     
         // Then display the result(s) of the user's query
