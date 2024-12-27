@@ -5,6 +5,6 @@ CREATE TABLE Marble (
 );
 
 CREATE TABLE Solution (
-    "User" INTEGER,
+    "user" INTEGER,
     Value TEXT
 );
