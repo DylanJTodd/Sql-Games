@@ -3,7 +3,7 @@ function toggleMenu() {
     if (menu.style.display === 'none') {
         menu.style.display = 'block';
         if (localStorage.getItem('currentLevel') === null) { localStorage.setItem('currentLevel', 1);}
-        const currentLevel = parseInt(localStorage.getItem('currentLevel'), 10) || 0;
+        const currentLevel = parseInt(localStorage.getItem('currentLevel'), 10) || 1;
         const levels = [
             { num: 1, link: 'play.html?caller=1'},
             { num: 2, link: 'play.html?caller=2'},
