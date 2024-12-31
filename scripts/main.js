@@ -272,11 +272,35 @@ class sqlExercise extends HTMLElement {
       return text.replace(/--.*$/gm, '').trim();
   }
 
+  // Helper function to compare results regardless of row order
+  compareResults(actual, expected) {
+      if (!actual || !expected) return false;
+      if (actual.length !== expected.length) return false;
+      
+      // Convert both results to strings for comparison (handles different data types)
+      const normalizeRow = (row) => {
+          return Object.values(row)
+              .map(val => String(val).toLowerCase().trim())
+              .sort()
+              .join('|');
+      };
+
+      // Convert results to comparable string arrays
+      const normalizedActual = actual.map(normalizeRow).sort();
+      const normalizedExpected = expected.map(normalizeRow).sort();
+
+      // Compare the normalized results
+      for (let i = 0; i < normalizedActual.length; i++) {
+          if (normalizedActual[i] !== normalizedExpected[i]) return false;
+      }
+      return true;
+  }
+
   connectedCallback() {
       var question = this.getAttribute('data-question') || '';
       var comment = this.getAttribute('data-comment') || '';
       var defaultText = this.getAttribute('data-default-text') || '';
-      var orderSensitive = this.getAttribute('data-orderSensitive') || false;
+      var solutionQuery = this.getAttribute('data-solution-query') || '';
       
       var homeDiv = document.createElement('div');
       homeDiv.className = 'sqlExHomeDiv';
@@ -294,7 +318,6 @@ class sqlExercise extends HTMLElement {
       var form = document.createElement('form');
 
       // Input Area
-      var form = document.createElement('form');
       var inputArea = document.createElement('div');
       inputArea.className = 'sqlExInputArea';
 
@@ -328,9 +351,27 @@ class sqlExercise extends HTMLElement {
           try {
               const cleanedQuery = this.cleanSQLForExecution(editor.getValue());
               const results = await query(cleanedQuery);
+              
               if (results.length > 0) {
                   result_div.className = 'returnOkay';
                   result_div.appendChild(datatable(results));
+
+                  // Solution checking if solution query exists
+                  if (solutionQuery) {
+                      try {
+                          const expectedResults = await query(solutionQuery);
+                          const isCorrect = this.compareResults(results, expectedResults);
+                          
+                          const solutionDiv = document.createElement('div');
+                          solutionDiv.style.marginTop = '10px';
+                          solutionDiv.style.fontWeight = 'bold';
+                          solutionDiv.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect. Try again.';
+                          solutionDiv.style.color = isCorrect ? '#4CAF50' : '#F44336';
+                          result_div.appendChild(solutionDiv);
+                      } catch (solutionErr) {
+                          console.error('Error executing solution query:', solutionErr);
+                      }
+                  }
               } else {
                   result_div.className = 'returnOkay';
                   result_div.insertAdjacentHTML("beforeend", `No data returned`);
@@ -338,15 +379,14 @@ class sqlExercise extends HTMLElement {
           } catch (err) {
               result_div.className = 'returnError';
               result_div.style.fontWeight = '600';
-              result_div.style.color = '#ED1C24';
+              result_div.style.color = '#F22976';
               result_div.innerText = err.message;
           }
           
           outputBox.innerHTML = '';
           outputBox.appendChild(result_div);
 
-          // Only clone if the element doesn't have 'no-clone' ID
-          if (!form.querySelector('.new-input-area') && this.id !== 'no-clone') {
+          if (!form.querySelector('.new-input-area') && this.id !== 'no-clone' && this.id !== 'sql-solution-div') {
               createNewCell();
           }
       };
@@ -429,6 +469,22 @@ class sqlExercise extends HTMLElement {
                   if (results.length > 0) {
                       new_result_div.className = 'returnOkay';
                       new_result_div.appendChild(datatable(results));
+
+                      if (solutionQuery) {
+                          try {
+                              const expectedResults = await query(solutionQuery);
+                              const isCorrect = this.compareResults(results, expectedResults);
+                              
+                              const solutionDiv = document.createElement('div');
+                              solutionDiv.style.marginTop = '10px';
+                              solutionDiv.style.fontWeight = 'bold';
+                              solutionDiv.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect. Try again.';
+                              solutionDiv.style.color = isCorrect ? '#4CAF50' : '#F44336';
+                              new_result_div.appendChild(solutionDiv);
+                          } catch (solutionErr) {
+                              console.error('Error executing solution query:', solutionErr);
+                          }
+                      }
                   } else {
                       new_result_div.className = 'returnOkay';
                       new_result_div.insertAdjacentHTML("beforeend", `No data returned`);
@@ -436,7 +492,7 @@ class sqlExercise extends HTMLElement {
               } catch (err) {
                   new_result_div.className = 'returnError';
                   new_result_div.style.fontWeight = '600';
-                  new_result_div.style.color = '#ED1C24';
+                  new_result_div.style.color = '#F22976';
                   new_result_div.innerText = err.message;
               }
 
@@ -444,7 +500,7 @@ class sqlExercise extends HTMLElement {
               newOutputBox.appendChild(new_result_div);
 
               if ((!newOutputArea.nextElementSibling || !newOutputArea.nextElementSibling.classList.contains('sqlExInputArea')) 
-                  && this.id !== 'no-clone') {
+                  && this.id !== 'no-clone' && this.id !== 'sql-solution-div') {
                   createNewCell();
               }
           };

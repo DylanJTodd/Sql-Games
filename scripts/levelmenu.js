@@ -18,7 +18,7 @@ function toggleMenu() {
         menu.innerHTML = levels.map(level => {
             return `<a href="${level.link}" style="text-decoration: none; color: inherit;">
                 <div style="padding: 12px 16px; cursor: pointer; transition: all 0.2s ease; border-radius: 8px; margin: 2px 0; background: white; color: inherit;"
-                     onmouseover="this.style.background='#f5f5f5'; this.style.color='#ED1C24';" 
+                     onmouseover="this.style.background='#f5f5f5'; this.style.color='#D12465';" 
                      onmouseout="this.style.background='white'; this.style.color='inherit';">
                     Level ${level.num}
                 </div>

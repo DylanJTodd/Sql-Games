@@ -21,7 +21,7 @@
         <link rel="icon" type="image/png" href="images/icons/datalemur-icon-32x32.png" sizes="32x32">
         <link rel="icon" type="image/png" href="images/icons/datalemur-icon-16x16.png" sizes="16x16">
         <link rel="manifest" href="images/icons/json/manifest.json">
-        <link rel="mask-icon" href="images/icons/svgs/datalemurlogoblacked.svg" color="#ed1c24">
+        <link rel="mask-icon" href="images/icons/svgs/datalemurlogoblacked.svg" color="#0B9387">
         <meta name="theme-color" content="#ffffff">
     <!-- /FAVICONS -->
 
@@ -94,7 +94,7 @@
             </a>
             <style>
                 a:hover {
-                    color: #ED1C24;
+                    color: #0B9387;
                 }
             </style>
 
@@ -108,8 +108,8 @@
 
     <!-- Title -->
     <header class="header-product container" style="text-align: left;">
-        <h1 id="level-number" class="product-logo product-logo-large" style="font-weight: bold;">Level X</h1>
-        <h2 id="level-tagline" class="product-tagline" style="color: #ED1C24; margin-left: 24px;">Short Level Description</h2>
+        <h1 id="level-number" class="product-logo product-logo-large" style="font-weight: bold; color: #D12465;">Level X</h1>
+        <h2 id="level-tagline" class="product-tagline" style="color: #0B9387; margin-left: 24px;">Short Level Description</h2>
     </header>
     <!-- /Title -->
 
@@ -123,7 +123,7 @@
 
         <div class="grid">
             <div class="grid-item">
-                <h2 id="experienced" style="color: #ED1C24; font-weight: bolder;">Scenario</h2>
+                <h2 id="experienced" style="color: #0B9387; font-weight: bolder;">Scenario</h2>
                 <p id="scenario-text">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
                     Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
@@ -137,13 +137,15 @@
                 </p>
 
 
-                <sql-exercise data-question="Use your knowledge of SQL and the schema to find the solution!" data-comment="Refer to the next section to pinpoint the exact detail/answer you need " data-default-text="
+                <sql-exercise data-question="Use your knowledge of SQL and the schema to find the solution!" data-comment="Refer to the next section to pinpoint the exact detail/answer you need " data-default-text="select * from table_name
               
               "></sql-exercise>
         <div id="check-solution" class="grid">
             <div class="grid-item">
-                <h3>Check your solution</h3>
-                <sql-exercise id = "sql-solution-div" data-question="Did you find the killer?" data-comment="" data-default-text="INSERT INTO solution VALUES (1, 'Insert the name of the person you found here');"></sql-exercise>
+                <h3>Enter your solution</h3>
+                <sql-exercise id = "sql-solution-div" data-solution-query="select * from marble" data-question="Produce the query that solves the problem statement" data-comment="" data-default-text="
+                
+                "></sql-exercise>
             </div>
         </div>
 
