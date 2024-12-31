@@ -1,50 +1,38 @@
-const urlParams = new URLSearchParams(window.location.search);
-const caller = urlParams.get('caller');
-
 import { PGlite } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.2.15/dist/index.js';
 
 
-let pglite;
+let pglite; // Global instance
 let isInitialized = false;
-let solution_string = '';
 
-// Load data from a SQL file(string) and execute the commands
-export async function loadData(sqlCommandsString) {
-  if (!sqlCommandsString) {
-    console.error('No SQL commands provided.');
-    return;
-  }
+export async function loadData(sqlFile) {
+  if (!sqlFile) { return; }
 
   try {
-    sqlCommandsString = String(sqlCommandsString);
-
     if (!isInitialized) {
       pglite = new PGlite();
       isInitialized = true;
     }
 
-    // Split the input string into individual SQL commands
-    const commands = sqlCommandsString
+    const response = await fetch(sqlFile);
+    if (!response.ok) {
+      throw new Error(`Failed to load SQL file: ${response.statusText}`);
+    }
+
+    const sqlCommands = await response.text();
+
+    const commands = sqlCommands
       .split(';')
       .map(cmd => cmd.trim())
       .filter(cmd => cmd.length > 0);
 
-    const batchSize = 50; // Adjust batch size as needed
-    for (let i = 0; i < commands.length; i += batchSize) {
-      const batchCommands = commands.slice(i, i + batchSize);
-
-      for (const command of batchCommands) {
-        if (command) {
-          try {
-            await pglite.query(command);
-          } catch (cmdError) {
-            console.error('Error executing command:', command, cmdError);
-          }
+    for (const command of commands) {
+      if (command) {  // Only execute non-empty commands
+        try {
+          await pglite.query(command);
+        } catch (cmdError) {
+          console.error('Error executing command:', command, cmdError);
         }
       }
-
-      // Yield control to the event loop to keep the UI responsive
-      await new Promise(resolve => setTimeout(resolve, 0));
     }
 
     try {
@@ -63,7 +51,7 @@ export async function loadData(sqlCommandsString) {
   }
 }
 
-// Initialize the database and load data when the DOM is ready
+// Make sure the DOM is loaded before initializing
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     await specificLoad();
@@ -72,216 +60,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Determine the specific data to load based on the caller
-async function specificLoad() {
-  if (caller === "index") {
-    try {
-      const response = await fetch('sql/mock_database.sql');
-      if (!response.ok) {
-        throw new Error(`Failed to load SQL file: ${response.statusText}`);
-      }
-      const sqlString = await response.text();
-      await loadData(sqlString);
-    } catch (err) {
-      console.error('Error loading SQL file:', err);
-    }
-  } else 
-  {
-    try {
-      let link;
-      switch (caller) {
-        case "1":
-          link = await extrapolateData(1);
-          break;
-        case "2":
-          link = await extrapolateData(2);
-          break;
-        case "3":
-          link = await extrapolateData(3);
-          break;
-        case "4":
-          link = await extrapolateData(4);
-          break;
-        case "5":
-          link = await extrapolateData(1);
-          break;
-        case "6":
-          link = await extrapolateData(2);
-          break;
-        case "7":
-          link = await extrapolateData(3);
-          break;
-        case "8":
-          link = await extrapolateData(4);
-          break;
-        case "9":
-          link = await extrapolateData(3);
-          break;
-        case "10":
-          link = await extrapolateData(4);
-          break;
-
-        default:
-          window.location.href = 'index.html?caller=index';
-      }
-      await loadData(link);
-      await SetSolution(parseInt(caller, 10));
-    } catch (err) {
-      console.error('Error processing level data:', err);
-    }
-  }
-}
-
-// Extrapolate and autopopulate data for each level
-async function extrapolateData(lvl) {
-  // Level 1 ----------------------------------------------------------------------------------
-  if (lvl === 1) {
-    let fileUrl = 'sql/level1.sql';
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      let fileContents = await response.text();
-      let colors = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'black', 'white', 'brown'];
-      let sizes = Array.from({ length: 10 }, (_, i) => i + 1);
-      let weights = Array.from({ length: 21 }, (_, i) => parseFloat((1 + i * 0.1).toFixed(1)));
-
-      // Generate values list 
-      let valuesList = Array.from({ length: 10000 }, () => {
-        let color = colors[Math.floor(Math.random() * colors.length)];
-        let size = sizes[Math.floor(Math.random() * sizes.length)];
-        let weight = weights[Math.floor(Math.random() * weights.length)];
-        return `('${color}', ${size}, ${weight})`;
-      }).join(',\n');
-
-      let insertStatement = `INSERT INTO Marble (Color, Size, Weight) VALUES\n${valuesList};`;
-
-      return fileContents + '\n' + insertStatement;
-    } catch (error) {
-      console.error('Error:', error);
-      return '';
-    }
-  }
-
-  // Level 2 ----------------------------------------------------------------------------------
-  if (lvl === 2) {
-    let fileUrl = 'sql/level2.sql';
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      let fileContents = await response.text();
-
-      let shapes = ['square', 'star', 'umbrella', 'triangle'];
-      let difficulties = Array.from({ length: 100 }, (_, i) => i + 1);
-      let valuesList = [];
-      let solutionRow = null;
-
-      for (let i = 1; i <= 1000; i++) {
-        let shape = shapes[Math.floor(Math.random() * shapes.length)];
-        let difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-        let isWet = Math.random() < 0.5;
-
-        // Ensure solution row is unique
-        if (!solutionRow && shape === 'star' && isWet === true && difficulty === Math.min(...difficulties)) {
-          solutionRow = i;
-        }
-
-        if (i === 1000 && !solutionRow) {
-          // If no solution row was created, make this the solution row
-          shape = 'star';
-          difficulty = Math.min(...difficulties);
-          isWet = true;
-          solutionRow = i;
-        }
-
-        valuesList.push(`(${i}, '${shape}', ${difficulty}, ${isWet})`);
-      }
-
-      let insertStatement = `INSERT INTO Honeycomb (id, Shape, Difficulty, iswet) VALUES\n${valuesList.join(',\n')};`;
-
-      return fileContents + '\n' + insertStatement + `\n-- Solution ID: ${solutionRow}`;
-    } catch (error) {
-      console.error('Error:', error);
-      return '';
-    }
-  }
-
-  return '';
-}
-
-
-async function SetSolution(lvl) {
-  if (lvl === 1) {
-    const sql_query = `
-      SELECT COUNT(*) AS count 
-      FROM marble 
-      WHERE color = 'red' 
-        AND weight <= 2 
-        AND size <= 5;
-    `;
-    
-    try {
-      // Execute the query using the utility function
-      const result = await query(sql_query);
-      
-      // Check if the result has the expected structure
-      if (result.length > 0 && result[0].values.length > 0) {
-        const count = result[0].values[0][0];
-        solution_string = String(count);
-      } else {
-        console.error('No rows returned from the count query.');
-        solution_string = '0';
-      }
-    } catch (err) {
-      console.error('Error executing count query:', err);
-      solution_string = '0';
-    }
-  }  
+function specificLoad() {
+  // Get the current page filename
+  const currentPage = window.location.pathname.split('/').pop();
   
-  else if (lvl === 2) {
-    const sql_query = `
-      SELECT id 
-      FROM Honeycomb 
-      WHERE Shape = 'star' 
-        AND iswet = true 
-      ORDER BY Difficulty ASC 
-      LIMIT 1;
-    `;
-    
-    try {
-      // Execute the query using the utility function
-      const result = await query(sql_query);
-      
-      // Check if the result has the expected structure
-      if (result.length > 0 && result[0].values.length > 0) {
-        const id = result[0].values[0][0];
-        solution_string = String(id);
-      } else {
-        console.error('No rows returned from the solution query.');
-        solution_string = '0';
-      }
-    } catch (err) {
-      console.error('Error executing solution query:', err);
-      solution_string = '0';
-    }
+  switch(currentPage) {
+      case 'index.html':
+          loadData('sql/mock_database.sql');
+          break;
+      case 'level1.html':
+          loadData('sql/level1.sql');
+          break;
+      case 'level3.html':
+          loadData('');
+          break;
+      case 'level5.html':
+          loadData('');
+          break;
   }
 }
 
-
-function NextLevel() 
-{
-  let currentLevel = parseInt(caller, 10);
-  currentLevel++;
-  if (localStorage.getItem('currentLevel') < currentLevel) 
-  {
-    localStorage.setItem('currentLevel', currentLevel);
-  }
-}
-
-// Query utility function
 async function query(sql, successCallback, errorCallback) {
   if (!pglite || !isInitialized) {
     const error = new Error('Database not initialized');
@@ -293,26 +91,9 @@ async function query(sql, successCallback, errorCallback) {
   }
 
   try {
-    // Split the input string into individual SQL commands
-    const commands = sql
-      .split(';')
-      .map(cmd => cmd.trim())
-      .filter(cmd => cmd.length > 0);
+    const result = await pglite.query(sql);
 
-    let lastResult;
-    for (const command of commands) {
-      if (command) {
-        try {
-          lastResult = await pglite.query(command);
-        } catch (cmdError) {
-          console.error('Error executing command:', command, cmdError);
-          throw cmdError; // Rethrow the error to be caught below
-        }
-      }
-    }
-
-    const result = lastResult;
-
+    // Transform PGlite result to match the expected format
     const transformedResult = [{
       columns: result.fields ? result.fields.map(f => f.name) : [],
       values: result.rows ? result.rows.map(row => Object.values(row)) : []
@@ -332,59 +113,40 @@ async function query(sql, successCallback, errorCallback) {
   }
 }
 
-// Datatable utility function
+// Datatable function remains the same
 function datatable(data) {
-    var tbl = document.createElement("table");
-    tbl.className = 'datatable';
+  var tbl = document.createElement("table");
+  tbl.className = 'datatable'
 
-    var header_labels = data[0].columns;
-    for (var idx in header_labels) {
-        var col = document.createElement('col');
-        col.className = header_labels[idx];
-        tbl.appendChild(col);
+  var header_labels = data[0].columns;
+  for (var idx in header_labels) {
+    var col = document.createElement('col');
+    col.className = header_labels[idx];
+    tbl.appendChild(col);
+  }
+
+  // create header row
+  var thead = tbl.createTHead();
+  var row = thead.insertRow(0);
+  for (var idx in header_labels) {
+    var cell = row.insertCell(idx);
+    cell.innerHTML = header_labels[idx];
+  }
+
+  // fill table body
+  var tbody = document.createElement("tbody");
+  for (var row_idx in data[0]['values']) {
+    var body_row = tbody.insertRow();
+    for (var header_idx in header_labels) {
+      var body_cell = body_row.insertCell();
+      body_cell.appendChild(document.createTextNode(data[0]['values'][row_idx][header_idx]));
     }
-
-    // create header row
-    var thead = tbl.createTHead();
-    var row = thead.insertRow(0);
-    for (var idx in header_labels) {
-        var cell = row.insertCell(idx);
-        cell.innerHTML = header_labels[idx];
-    }
-
-    // fill table body
-    var tbody = document.createElement("tbody");
-    const rowLimit = 20;
-    const totalRows = data[0]['values'].length;
-    
-    // Only show up to 20 rows
-    for (var row_idx = 0; row_idx < Math.min(rowLimit, totalRows); row_idx++) {
-        var body_row = tbody.insertRow();
-        for (var header_idx in header_labels) {
-            var body_cell = body_row.insertCell();
-            body_cell.appendChild(document.createTextNode(data[0]['values'][row_idx][header_idx]));
-        }
-    }
-    tbl.appendChild(tbody);
-
-    // Create a container div to hold both table and message
-    var container = document.createElement('div');
-    container.appendChild(tbl);
-
-    // Add message if there are more than 20 rows
-    if (totalRows > rowLimit) {
-        var message = document.createElement('div');
-        message.style.marginTop = '10px';
-        message.style.fontStyle = 'italic';
-        message.style.color = '#666';
-        message.textContent = `Output limited to ${rowLimit} rows (${totalRows} total rows)`;
-        container.appendChild(message);
-    }
-
-    return container;
+  }
+  tbl.appendChild(tbody);
+  return tbl;
 }
 
-// Set difference utility function
+// Set difference utility function remains the same
 function setdiff(a, b) {
   var seta = new Set(a);
   var setb = new Set(b);
@@ -392,7 +154,7 @@ function setdiff(a, b) {
   return res;
 }
 
-// SQL Quiz Component 
+// SQL Quiz Component
 class sqlQuizOption extends HTMLElement {
   constructor() {
     super();
@@ -502,16 +264,12 @@ customElements.define('sql-quiz', sqlQuiz);
 
 // SQL Exercise Component
 class sqlExercise extends HTMLElement {
-  shouldDisableCloning(text) {
-      return text.includes('--clone=false');
+  constructor() {
+      super();
   }
 
   cleanSQLForExecution(text) {
       return text.replace(/--.*$/gm, '').trim();
-  }
-
-  constructor() {
-      super();
   }
 
   connectedCallback() {
@@ -565,110 +323,30 @@ class sqlExercise extends HTMLElement {
       form['onsubmit'] = async (e) => {
           e && e.preventDefault();
           var result_div = document.createElement('div');
-          
           result_div.style.overflow = 'hidden';
-          
-          var handleSubmit = async (submission_data) => {
-              result_div.className = 'returnOkay';
-          
-              var expected_value = this.getAttribute('data-solution') || solution_string || '';
-          
-              try {
-                  let user_solution_result = await query('SELECT value FROM solution WHERE "user" = 1;');
-          
-                  var verdict_div = document.createElement('div');
-          
-                  verdict_div.style.fontWeight = '800';
-                  verdict_div.style.fontSize = '1.2em';
-                  verdict_div.style.color = '#ED1C24';
-          
-                  result_div.appendChild(verdict_div);
-          
-                  if (user_solution_result.length > 0 && user_solution_result[0].values.length > 0) {
-                      var user_value = user_solution_result[0].values[0][0];
-                  
-                      if (user_value == expected_value) {
-                          verdict_div.innerText = 'Congratulations! That\'s the correct answer!';
-                  
-                          const buttonDiv = document.createElement('div');
-                          buttonDiv.style.textAlign = 'left';
-                          buttonDiv.style.margin = '0';
-                          buttonDiv.style.padding = '0';
-                  
-                          const link = document.createElement('a');
-                          link.href = 'play.html?caller=' + (parseInt(caller, 10) + 1);
-                          link.style.textDecoration = 'none';
-                          
-                          const button = document.createElement('button');
-                          button.style.padding = '0';
-                          button.style.width = '30vw';
-                          button.style.minWidth = '200px';
-                          button.style.height = '5vh';
-                          button.style.minHeight = '20px';
-                          button.style.maxHeight = '50px';
-                          button.style.borderRadius = '12px';
-                          button.style.backgroundColor = '#ED1C24';
-                          button.style.color = 'white';
-                          button.style.border = 'none';
-                          button.style.cursor = 'pointer';
-                          button.style.marginTop = '16px';
-                          button.style.marginBottom = '16px';
-                  
-                          const buttonText = document.createElement('b');
-                          const p = document.createElement('p');
-                          p.style.margin = '0';
-                          p.style.padding = '0';
-                          p.style.fontSize = 'x-large';
-                          p.innerText = 'Next Level';
-                  
-                          buttonText.appendChild(p);
-                          button.appendChild(buttonText);
-                          link.appendChild(button);
-                          buttonDiv.appendChild(link);
-                  
-                          verdict_div.appendChild(buttonDiv);
-                  
-                          button.addEventListener('click', function() {
-                              window.location.href = link.href;
-                          });
-                  
-                          NextLevel();
-                      } else {
-                          verdict_div.innerText = 'Sorry! You got it wrong. Try again!';
-                      }
-                  
-                      await query('DELETE FROM solution;');
-                  }
-              } catch (err) {
-                  console.error('Error checking solution:', err);
-              }
-          
-              if (submission_data.length > 0) {
-                  result_div.appendChild(datatable(submission_data));
-              } else {
-                  result_div.insertAdjacentHTML("beforeend", `No data returned`);
-              }
-          };
-          
-          var handleError = (e) => {
-              result_div.className = 'returnError';
-              result_div.style.fontWeight = '600';
-              result_div.style.color = '#ED1C24';
-              result_div.innerText = e.message;
-          };
           
           try {
               const cleanedQuery = this.cleanSQLForExecution(editor.getValue());
               const results = await query(cleanedQuery);
-              await handleSubmit(results);
+              if (results.length > 0) {
+                  result_div.className = 'returnOkay';
+                  result_div.appendChild(datatable(results));
+              } else {
+                  result_div.className = 'returnOkay';
+                  result_div.insertAdjacentHTML("beforeend", `No data returned`);
+              }
           } catch (err) {
-              handleError(err);
+              result_div.className = 'returnError';
+              result_div.style.fontWeight = '600';
+              result_div.style.color = '#ED1C24';
+              result_div.innerText = err.message;
           }
           
           outputBox.innerHTML = '';
           outputBox.appendChild(result_div);
 
-          if (!form.querySelector('.new-input-area') && !this.shouldDisableCloning(editor.getValue())) {
+          // Only clone if the element doesn't have 'no-clone' ID
+          if (!form.querySelector('.new-input-area') && this.id !== 'no-clone') {
               createNewCell();
           }
       };
@@ -766,7 +444,7 @@ class sqlExercise extends HTMLElement {
               newOutputBox.appendChild(new_result_div);
 
               if ((!newOutputArea.nextElementSibling || !newOutputArea.nextElementSibling.classList.contains('sqlExInputArea')) 
-                  && !this.shouldDisableCloning(newEditor.getValue())) {
+                  && this.id !== 'no-clone') {
                   createNewCell();
               }
           };
@@ -780,18 +458,3 @@ class sqlExercise extends HTMLElement {
 }
 
 customElements.define('sql-exercise', sqlExercise);
-
-function arraysEqual(a,b) {
-  if (a instanceof Array && b instanceof Array) {
-    if (a.length != b.length) {
-      return false;
-    }
-    for (var i=0; i<a.length; i++) {
-      if (!arraysEqual(a[i],b[i]))
-        return false;
-    }
-    return true;
-  } else {
-    return a == b;
-  }
-}

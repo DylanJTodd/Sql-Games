@@ -140,7 +140,7 @@
                 </p>
 
                 <div style="text-align: center;margin: 0; padding: 0;">
-                    <a href="play.html" style="text-decoration: none;">
+                    <a href="level1.html" style="text-decoration: none;">
                         <button style="padding: 0; width: 30vw; min-width: 300px; height: 5vh; min-height: 35px; max-height: 50px; border-radius: 12px; background-color: #ED1C24; color: white; border: none; cursor: pointer; margin-top: 16px; margin-bottom: 16px;">
                             <b><p style="margin: 0; padding: 0; font-size:x-large ;">Join The SQL Games</p></b>
                         </button>
@@ -161,10 +161,9 @@
                     Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
                 </p>
                 <!-- Fix issue tomorrow -->
-                <sql-exercise data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT table_name 
+                <sql-exercise id="no-clone" data-question="Run this query to find the names of the tables in a mock database." data-comment="This command is specific to PostgreSQL." data-default-text="SELECT table_name 
   FROM information_schema.tables 
- WHERE table_schema = 'public';
- --clone=false"></sql-exercise>
+ WHERE table_schema = 'public';"></sql-exercise>
 
             </div>
         </div>
@@ -175,10 +174,9 @@
                     Not only is knowing which tables exist in the database, but also knowing the structure of the tables is important. This command is also database language you use. Again this is PostgreSQL:
                 </p>
 
-                <sql-exercise data-question="Run the below query to find the structure of the `user` table" data-comment="Tip: You can change the value of `user` to match any of the other names you saw in the previous query." data-default-text="SELECT table_schema, table_name, column_name, data_type, is_nullable
+                <sql-exercise id="no-clone" data-question="Run the below query to find the structure of the `user` table" data-comment="Tip: You can change the value of `user` to match any of the other names you saw in the previous query." data-default-text="SELECT table_schema, table_name, column_name, data_type, is_nullable
   FROM information_schema.columns
- WHERE table_name = 'users';
- --clone=false"></sql-exercise>
+ WHERE table_name = 'users';"></sql-exercise>
 
                 <p>
                     Alternatively, each level will provide the option to <a id="show-schema" style="cursor: pointer;">click</a> and show the schema diagram.

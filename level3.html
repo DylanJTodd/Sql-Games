@@ -1,0 +1,163 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="canonical" href="https://dylanjtodd.github.io/Sql-Games/"> <!-- Update -->
+    <title>The SQL Games</title>
+
+    <!-- CSS -->  
+        <link rel="stylesheet" href="css/orangeline.css" />
+        <link rel="stylesheet" href="css/codemirror.css">
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/neat.css" />
+    <!-- /CSS -->
+
+    <!-- FAVICONS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="images/icons/datalemur-icon-180x180.png">
+        <link rel="icon" type="image/png" href="images/icons/datalemur-icon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="images/icons/datalemur-icon-16x16.png" sizes="16x16">
+        <link rel="manifest" href="images/icons/json/manifest.json">
+        <link rel="mask-icon" href="images/icons/svgs/datalemurlogoblacked.svg" color="#ed1c24">
+        <meta name="theme-color" content="#ffffff">
+    <!-- /FAVICONS -->
+
+    <!-- Meta -->
+        <meta name="keywords" content="SQL, databases, game, fun, DataLemur, learn, practice, learning, SQL games">
+        <meta name="description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?">
+        <meta name="author" content="Dylan Todd">
+        <meta name="robots" content="index, follow">
+        <meta http-equiv='cache-control' content='no-cache'> 
+        <meta http-equiv='expires' content='0'> 
+        <meta http-equiv='pragma' content='no-cache'>
+    <!-- /Meta -->
+
+    <!-- Open Graph -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="SQL Games!" />
+        <meta property="og:description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?" />
+        <!-- <meta property="og:image" content="Display Image" /> -->
+        <meta property="og:url" content="https://dylanjtodd.github.io/Sql-Games/" /> <!-- Update -->
+        <meta property="og:site_name" content="DataLemurs SQL Death Games!" />
+    <!-- /Open Graph -->
+
+    <!-- Twitter Card -->
+        <meta name="twitter:title" content="DataLemurs SQL Death Games!">
+        <meta name="twitter:description" content="Use SQL queries to solve each level. Suitable for all skill levels. Can you reach the end?">
+        <!--  <meta name="twitter:image" content="Display Image"> -->
+        <meta name="twitter:site" content="@nicksinghtech">
+        <meta name="twitter:creator" content="@nicksinghtech">
+    <!-- /Twitter Card -->
+
+    <!-- Scripts -->
+        <script src="https://unpkg.com/@webcomponents/custom-elements@1.2.0/custom-elements.min.js"></script> 
+        <script src="scripts/codemirror.js"></script>
+        <script src="scripts/codemirrorsql.js"></script>
+        <script src="scripts/autorefresh.js"></script>
+        <script src="scripts/levelmenu.js"></script>
+        <script type="module" src="scripts/main.js?caller=play"></script>
+    <!-- /Scripts -->
+
+    <!-- Google tag (gtag.js) -->
+        <!--
+        <<script async src="https://www.googletagmanager.com/gtag/js?id=G-8F4WPDMPL5"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-8F4WPDMPL5');
+        </script>> 
+        -->
+    <!-- Google tag (gtag.js) -->
+
+    <title>The SQL Games</title>
+</head>
+
+<body>
+    <!-- Level Menu -->
+        <div id="levelMenu" style="display: none; position: fixed; right: 22px; top: 80px; width: 240px; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 8px; z-index: 1000;">
+        </div>
+    <!-- /Level Menu -->
+
+    <!-- Header -->
+        <nav style="position: sticky; top: 0; background: white; z-index: 100; display: flex;">
+            <a id="main-nav-link" href="https://datalemur.com/" style="display: flex; justify-content: left; align-items: center; height: 52px; padding-left: 18px; width: 200px; background: none !important;">
+                <img src="images/icons/svgs/datalemurlogo.svg" alt="DataLemur Logo" style="margin-top: 15px;">
+            </a>
+            
+            <a href="index.html?caller=index" style="background: none !important; margin-left: 8px; margin-top: 8px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <h5 style="margin: 0; font-weight: 600 ;">Introduction</h5>
+            </a>
+            <style>
+                a:hover {
+                    color: #ED1C24;
+                }
+            </style>
+
+            <ul style="margin-left: auto; display: flex; justify-content: flex-end; padding-right: 22px !important;">
+                <a onclick="toggleMenu()" style="background: none !important; margin-right: 20px; margin-top: 8px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <h5 style="margin: 0; font-weight:700">Levels</h5>
+                </a>
+            </ul>
+        </nav>
+    <!-- /Header -->
+
+    <!-- Title -->
+    <header class="header-product container" style="text-align: left;">
+        <h1 id="level-number" class="product-logo product-logo-large" style="font-weight: bold;">Level X</h1>
+        <h2 id="level-tagline" class="product-tagline" style="color: #ED1C24; margin-left: 24px;">Short Level Description</h2>
+    </header>
+    <!-- /Title -->
+
+
+    <div class="container">
+        <div id="intro" class="grid">
+            <div class="grid-item">
+                <img id = "opening-image" src="images/SqlGamesIntroImage.jpg" class="img-rounded" alt="Illustration of 3 hooded masked men with the letters S,Q,L written on the mask.">
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="grid-item">
+                <h2 id="experienced" style="color: #ED1C24; font-weight: bolder;">Scenario</h2>
+                <p id="scenario-text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. 
+                    Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis 
+                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. 
+                    Vestibulum lacinia arcu eget nulla. 
+                </p>
+
+                <p style="margin-bottom: 16px;">
+                    click <a id="show-schema" style="cursor: pointer;">here</a> to show the schema diagram.
+                    <img id="experienced-schema" src="images/schemas/MockDataBaseSchema.png" width='1002' height='491'>
+                </p>
+
+
+                <sql-exercise data-question="Use your knowledge of SQL and the schema to find the solution!" data-comment="Refer to the next section to pinpoint the exact detail/answer you need " data-default-text="
+              
+              "></sql-exercise>
+        <div id="check-solution" class="grid">
+            <div class="grid-item">
+                <h3>Check your solution</h3>
+                <sql-exercise id = "sql-solution-div" data-question="Did you find the killer?" data-comment="" data-default-text="INSERT INTO solution VALUES (1, 'Insert the name of the person you found here');"></sql-exercise>
+            </div>
+        </div>
+
+    <footer class="footer-knightlab--dark" style="position: absolute; left: 0; right: 0; width: 100%; background-color: #333; color: white; text-align: center; padding: 10px 0; height: 50px;">
+        <!-- To Be Added Soon -->
+    </footer>
+
+    <!-- More Scripts! -->
+        <script src="scripts/orangeline.js"></script>
+        <script type="text/javascript">
+            document.querySelector('#show-schema').addEventListener('click', function() {
+                document.querySelector('#experienced-schema').classList.add('show');
+            })
+        </script>
+    <!-- More Scripts! -->
+</body>
+</html>
